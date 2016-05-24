@@ -1,14 +1,16 @@
 #pragma once
 
 class HTMainThread : public CWinApp {
+protected:
+
 public:
-	HTMainThread();
+	friend UINT WINAPIV subThread(_Inout_ LPVOID lpParam);
 	
-	~HTMainThread();
+	HTMainThread();
+	virtual ~HTMainThread();
+
 	virtual BOOL InitInstance() override;
 	DECLARE_MESSAGE_MAP()
 };
-
-UINT WINAPIV bgThread(LPVOID pParam);
 
 extern HTMainThread mainThread;

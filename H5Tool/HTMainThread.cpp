@@ -14,12 +14,13 @@ BOOL HTMainThread::InitInstance() {
 	CWinApp::InitInstance();
 
 	CFrameWnd * tempWnd = new CFrameWnd;
-	BOOL result = tempWnd->Create(NULL, NULL);
+	tempWnd->Create(NULL, NULL);
 	m_pMainWnd = tempWnd;
+
 	return TRUE;
 }
 
-UINT WINAPIV bgThread(LPVOID pParam) {
+UINT WINAPIV subThread(_Inout_ LPVOID lpParam) {
 	return NULL;
 }
 
