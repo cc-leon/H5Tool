@@ -83,6 +83,7 @@ HANDLE HTMainThread::_seekEXE() {
 
 HANDLE HTMainThread::_hookDLL(_In_ HANDLE CONST hProc) {
 	LPVOID procAddr = NULL;
+
 #ifdef _UNICODE
 	procAddr = (LPVOID)GetProcAddress(GetModuleHandle(L"kernel32.dll"), "LoadLibraryW");
 	if (procAddr == NULL) {
@@ -124,7 +125,8 @@ UINT WINAPIV subThread(_Inout_ LPVOID lpParam) {
 
 	ptr->_hookDLL(hProc);
 
-	//CloseHandle(hProc);
+	CloseHandle(hProc);
+
 	return NULL;
 }
 
