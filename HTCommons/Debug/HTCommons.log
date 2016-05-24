@@ -1,0 +1,13 @@
+﻿Build started 23/5/2016 11:07:50 PM.
+     1>Project "D:\Projects\H5Tool\HTCommons\HTCommons.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Yc"stdafxCommons.h" /Fp"Debug\HTCommons.pch" /Fo"Debug\\" /Fd"Debug\HTCommons.pdb" /Gd /TP /analyze- /errorReport:prompt stdafxCommons.cpp
+         stdafxCommons.cpp
+       Lib:
+         D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\Lib.exe /OUT:"D:\Projects\H5Tool\Debug\HTCommons.lib" /NOLOGO Debug\stdafxCommons.obj
+         HTCommons.vcxproj -> D:\Projects\H5Tool\Debug\HTCommons.lib
+     1>Done Building Project "D:\Projects\H5Tool\HTCommons\HTCommons.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:02.31
