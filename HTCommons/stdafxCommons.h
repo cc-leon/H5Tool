@@ -2,5 +2,5 @@
 
 #include "HTCommonIncludes.h"
 
-#pragma comment(lib, "sqlite3.lib")
+#pragma comment(lib, "../HTCommons/sqlite3.lib")
 

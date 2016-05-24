@@ -1,4 +1,8 @@
 #pragma once
+
+#define _1K 0x400
+#define _4K 0x1000
+
 class HTConstants {
 private:
 	struct {
