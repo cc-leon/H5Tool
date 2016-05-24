@@ -1,3 +1,3 @@
 #pragma once
 
-#include "..\HTCommons\HTCommonIncludes.h"
+#include "../HTCommons/HTCommonIncludes.h"
