@@ -5,3 +5,4 @@ ipch
 H5Tool/Debug
 HTCommons/Debug
 HTDLL/Debug
+*.exe
