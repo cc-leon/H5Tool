@@ -1,3 +1,5 @@
 #pragma once
 
-#include "../HTCommons/HTCommonIncludes.h"
+#include <Windows.h>
+#include <strsafe.h>
+#include <tchar.h>

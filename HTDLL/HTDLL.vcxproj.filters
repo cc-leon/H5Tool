@@ -26,5 +26,8 @@
     <ClInclude Include="stdafxDLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HTDLL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@ protected:
 
 public:
 	static TCHAR CONST H5_EXE_NAME[];
-	static TCHAR CONST HOOK_DLL_NAME[];
+	static CHAR CONST HOOK_DLL_NAME[];
 
 	friend UINT WINAPIV subThread(_Inout_ LPVOID lpParam);
 

@@ -1,0 +1,19 @@
+﻿Build started 24/5/2016 7:40:33 PM.
+     1>Project "D:\Projects\H5Tool\HTDLL\HTDLL.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /sdl /O2 /Oi /Oy- /GL /D _WINDLL /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Release\\" /Fd"Release\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt HTDLL.cpp stdafxDLL.cpp
+         HTDLL.cpp
+     1>HTDLL.cpp(58): warning C4101: 'cc': unreferenced local variable
+         stdafxDLL.cpp
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\Projects\H5Tool\Release\HTDLL.dll" /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"D:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\Include\Manifest\dpiaware.manifest" /Debug /PDB:"D:\Projects\H5Tool\Release\HTDLL.pdb" /OPT:REF /OPT:ICF /LTCG:incremental /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\Projects\H5Tool\Release\HTDLL.lib" /MACHINE:X86 /SAFESEH /DLL Release\HTDLL.obj
+         Release\stdafxDLL.obj
+         Generating code
+         All 112 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+         Finished generating code
+         HTDLL.vcxproj -> D:\Projects\H5Tool\Release\HTDLL.dll
+     1>Done Building Project "D:\Projects\H5Tool\HTDLL\HTDLL.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:16.22
