@@ -1,4 +1,3 @@
-
 #include "stdafxDLL.h"
 #include "HTDLL.h"
 
@@ -118,7 +117,6 @@ namespace HTDLL {
 				_itoa_s(currHeroAddr, aaa, 20, 16);
 				MessageBox(hWnd, aaa, "", NULL);
 			}
-
 			procMsg();
 			Sleep(50);
 		}

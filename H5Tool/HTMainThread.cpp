@@ -29,11 +29,27 @@ BOOL HTMainThread::InitInstance() {
 	tempWnd->Create(NULL, NULL);
 	m_pMainWnd = tempWnd;
 
-	if (::AfxBeginThread(subThread, this) == NULL) {
-		THROW_API("AfxBeginThread", NULL, "");
+	return TRUE;
+}
+
+int HTMainThread::Run() {
+	_hProc = NULL;
+	_procID = NULL;
+
+	if (_seekEXE() == FALSE) {
+		if (_launchEXE() == FALSE) {
+			THROW_USER("H5_Game.exe can be found in neither memory nor disk.");
+		}
 	}
 
-	return TRUE;
+	_hookDLL(_hProc);
+
+	_sendProcID(_procID);
+
+	::WaitForSingleObject(_hProc, INFINITE);
+	::CloseHandle(_hProc);
+	
+	return 0;
 }
 
 BOOL HTMainThread::_launchEXE() {
@@ -121,27 +137,6 @@ VOID HTMainThread::_sendProcID(_In_ DWORD CONST procID) {
 	::WriteFile(hPipe, &procID, sizeof(procID), NULL, NULL);
 	
 	::CloseHandle(hPipe);
-}
-
-UINT WINAPIV subThread(_Inout_ LPVOID lpParam) {
-	HTMainThread * CONST ptr = reinterpret_cast<HTMainThread*>(lpParam);
-	ptr->_hProc = NULL;
-	ptr->_procID = NULL;
-	
-	if (ptr->_seekEXE() == FALSE) {
-		if (ptr->_launchEXE() == FALSE) {
-			THROW_USER("H5_Game.exe can be found in neither memory nor disk.");
-		}
-	}
-
-	ptr->_hookDLL(ptr->_hProc);
-
-	ptr->_sendProcID(ptr->_procID);
-
-	::WaitForSingleObject(ptr->_hProc, INFINITE);
-	::CloseHandle(ptr->_hProc);
-
-	return NULL;
 }
 
 HTMainThread mainThread;

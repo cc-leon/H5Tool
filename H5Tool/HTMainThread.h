@@ -19,6 +19,8 @@ public:
 	virtual ~HTMainThread();
 
 	virtual BOOL InitInstance() override;
+	virtual int Run() override;
+
 	DECLARE_MESSAGE_MAP()
 };
 
