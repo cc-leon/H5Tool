@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C9306AFE-391F-4985-851B-92F5A7396283}</ProjectGuid>
-    <RootNamespace>H5Tool</RootNamespace>
+    <ProjectGuid>{95D5C4AF-5A3F-44D5-AD2A-EA6AE796CB53}</ProjectGuid>
+    <RootNamespace>HTConfig</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -36,8 +36,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-    <UseOfMfc>Static</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -77,11 +76,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Create</PrecompiledHeader>
-      <PrecompiledHeaderFile>stdafxMainThread.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>stdafxConfig.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,24 +121,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="HTMainThread.h" />
-    <ClInclude Include="stdafxMainThread.h" />
+    <ClInclude Include="HTConfig.h" />
+    <ClInclude Include="HTConfigWnd.h" />
+    <ClInclude Include="stdafxConfig.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HTMainThread.cpp" />
-    <ClCompile Include="stdafxMainThread.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\HTCommons\HTCommons.vcxproj">
-      <Project>{bd166d99-f9e1-4b2c-bb02-fd26212f4108}</Project>
-    </ProjectReference>
+    <ClCompile Include="HTConfig.cpp" />
+    <ClCompile Include="HTConfigWnd.cpp" />
+    <ClCompile Include="stdafxConfig.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
-  <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties RESOURCE_FILE="\Projects\H5Tool\HTDLL\HTDLL.rc" />
-    </VisualStudio>
-  </ProjectExtensions>
 </Project>

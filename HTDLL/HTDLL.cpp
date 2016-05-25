@@ -28,9 +28,76 @@ namespace HTDLL {
 	void __declspec(naked) asmFunc() {
 		__asm {
 			mov ecx, [esi + 04]
-			mov currHeroAddr, ecx
-			cmp ecx, [edi + 04]
-			jmp[jmpBackAddy]
+				mov currHeroAddr, ecx
+				cmp ecx, [edi + 04]
+				jmp[jmpBackAddy]
+		}
+	}
+
+	VOID getProcID() {
+		HANDLE hPipe = INVALID_HANDLE_VALUE;
+		do {
+			hPipe = ::CreateFile(
+				PIPE_NAME, GENERIC_READ | GENERIC_WRITE,
+				0, NULL,
+				OPEN_EXISTING,
+				0, NULL);
+		} while (!VALID_HANDLE(hPipe));
+
+		DWORD cbRead = 0;
+		::ReadFile(hPipe, &procID, sizeof(procID), &cbRead, NULL);
+		::CloseHandle(hPipe);
+	}
+
+	BOOL CALLBACK enumWndProc(_In_ HWND hwnd, _In_ LPARAM lParam) {
+		DWORD tID = 0, pID = 0;
+		tID = ::GetWindowThreadProcessId(hwnd, &pID);
+		if (tID != 0 && pID != 0) {
+			if (pID == procID) {
+				TCHAR title[MAX_PATH];
+				::GetWindowText(hwnd, title, MAX_PATH);
+				if (title[0] != _T('D') && title[0] != _T('M')) {
+					hWnd = hwnd;
+					return FALSE;
+				}
+			}
+		}
+		return TRUE;
+	}
+
+	VOID seekHWnd() {
+		::EnumWindows(enumWndProc, NULL);
+	}
+
+	LRESULT CALLBACK callWndProc(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lParam) {
+		return 0;
+	}
+
+	VOID setKey() {
+		BOOL br = ::RegisterHotKey(NULL, 1234, MOD_CONTROL, 0x31);
+		if (br) {
+			::MessageBox(hWnd, "Success1", NULL, NULL);
+		}
+		else {
+			::MessageBox(hWnd, "Fail1", NULL, NULL);
+		}
+		HHOOK hHook = ::SetWindowsHookEx(WH_CALLWNDPROC, callWndProc, NULL, NULL);
+		if (VALID_HANDLE(hHook)) {
+			::MessageBox(hWnd, "Success2", NULL, NULL);
+		}
+		else {
+			::MessageBox(hWnd, "Fail2", NULL, NULL);
+		}
+	}
+
+	VOID procMsg() {
+		MSG msg;
+		if (::PeekMessage(&msg, NULL, NULL, NULL, PM_NOREMOVE)) {
+			::GetMessage(&msg, NULL, NULL, NULL);
+			::TranslateMessage(&msg);
+			CHAR aaa[20];
+			_itoa_s(LOWORD(msg.message), aaa, 20, 16);
+			MessageBox(hWnd, aaa, "", NULL);
 		}
 	}
 
@@ -41,14 +108,19 @@ namespace HTDLL {
 
 		hookFunc((void*)hookAddress, asmFunc, hookLength);
 
+		getProcID();
+		seekHWnd();
+		setKey();
+
 		while (true) {
-			if (GetAsyncKeyState(VK_ESCAPE)) {
+			if (GetAsyncKeyState(VK_RCONTROL)) {
 				CHAR aaa[20];
 				_itoa_s(currHeroAddr, aaa, 20, 16);
-				MessageBox(NULL, aaa, "", NULL);
+				MessageBox(hWnd, aaa, "", NULL);
 			}
-			//Sleep(50);
-			//break;
+
+			procMsg();
+			Sleep(50);
 		}
 
 		::FreeLibraryAndExitThread((HMODULE)param, 0);

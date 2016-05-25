@@ -9,4 +9,8 @@ HTCommons/Debug
 HTCommons/Release
 HTDLL/Debug
 HTDLL/Release
+HTConfig/Debug
+HTConfig/Release
+H5Tool_Installer/Debug
+H5Tool_Installer/Release
 *.exe

@@ -36,7 +36,7 @@ BOOL HTMainThread::InitInstance() {
 	return TRUE;
 }
 
-HANDLE HTMainThread::_launchEXE() {
+BOOL HTMainThread::_launchEXE() {
 	STARTUPINFO startInfo;
 	PROCESS_INFORMATION procInfo;
 	::ZeroMemory(&startInfo, sizeof(startInfo));
@@ -48,15 +48,13 @@ HANDLE HTMainThread::_launchEXE() {
 		NULL, NULL, NULL,
 		&startInfo, &procInfo);
 
-	if(br != FALSE) { //exe does exist 
-		return 	procInfo.hProcess;
-	}
-	else {//exe doesn't exis
-		return NULL;
-	}
+	_hProc = procInfo.hProcess;
+	_procID = procInfo.dwProcessId;
+
+	return br;
 }
 
-HANDLE HTMainThread::_seekEXE() {
+BOOL HTMainThread::_seekEXE() {
 	HANDLE hProc = NULL;
 	DWORD procIDs[_1K],cbProcIDs;
 	TCHAR fileName[_1K];
@@ -71,7 +69,9 @@ HANDLE HTMainThread::_seekEXE() {
 				if (slen > 0) {
 					int cmpRes = ::StrCmp(fileName, H5_EXE_NAME);
 					if (cmpRes == 0) {
-						return hProc;
+						_hProc = hProc;
+						_procID = procIDs[i];
+						return TRUE;
 					}
 				}
 			}
@@ -79,7 +79,7 @@ HANDLE HTMainThread::_seekEXE() {
 		::CloseHandle(hProc);
 	}
 
-	return NULL; 
+	return FALSE; 
 }
 
 HANDLE HTMainThread::_hookDLL(_In_ HANDLE CONST hProc) {
@@ -109,19 +109,37 @@ HANDLE HTMainThread::_hookDLL(_In_ HANDLE CONST hProc) {
 	return 0;
 }
 
-UINT WINAPIV subThread(_Inout_ LPVOID lpParam) {
-	HTMainThread * CONST ptr = reinterpret_cast<HTMainThread*>(lpParam);
-	HANDLE hProc = NULL;
-	hProc = ptr->_seekEXE();
-	
-	if (!VALID_HANDLE(hProc)) {
-		hProc = ptr->_launchEXE();
+VOID HTMainThread::_sendProcID(_In_ DWORD CONST procID) {
+	HANDLE hPipe = ::CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_WRITE_THROUGH,
+		PIPE_TYPE_MESSAGE, PIPE_UNLIMITED_INSTANCES, NULL, NULL, NULL, NULL);
+	DWORD cc = GetLastError();
+	if (!VALID_HANDLE(hPipe)) {
+		THROW_API("CreateNamedPipe", hPipe, " ");
 	}
 
-	ptr->_hookDLL(hProc);
+	::ConnectNamedPipe(hPipe, NULL);
+	::WriteFile(hPipe, &procID, sizeof(procID), NULL, NULL);
+	
+	::CloseHandle(hPipe);
+}
 
-	while (true);
-	//CloseHandle(hProc);
+UINT WINAPIV subThread(_Inout_ LPVOID lpParam) {
+	HTMainThread * CONST ptr = reinterpret_cast<HTMainThread*>(lpParam);
+	ptr->_hProc = NULL;
+	ptr->_procID = NULL;
+	
+	if (ptr->_seekEXE() == FALSE) {
+		if (ptr->_launchEXE() == FALSE) {
+			THROW_USER("H5_Game.exe can be found in neither memory nor disk.");
+		}
+	}
+
+	ptr->_hookDLL(ptr->_hProc);
+
+	ptr->_sendProcID(ptr->_procID);
+
+	::WaitForSingleObject(ptr->_hProc, INFINITE);
+	::CloseHandle(ptr->_hProc);
 
 	return NULL;
 }
