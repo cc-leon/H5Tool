@@ -125,12 +125,14 @@
   <ItemGroup>
     <ClInclude Include="HTCommonIncludes.h" />
     <ClInclude Include="HTConstants.h" />
+    <ClInclude Include="HTEnumBase.h" />
     <ClInclude Include="HTException.h" />
     <ClInclude Include="HTFuncs.h" />
     <ClInclude Include="stdafxCommons.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HTConstants.cpp" />
+    <ClCompile Include="HTEnumBase.cpp" />
     <ClCompile Include="HTException.cpp" />
     <ClCompile Include="HTFuncs.cpp" />
     <ClCompile Include="stdafxCommons.cpp" />

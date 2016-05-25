@@ -126,6 +126,11 @@
   <ItemGroup>
     <ClCompile Include="stdafxInstall.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HTCommons\HTCommons.vcxproj">
+      <Project>{bd166d99-f9e1-4b2c-bb02-fd26212f4108}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

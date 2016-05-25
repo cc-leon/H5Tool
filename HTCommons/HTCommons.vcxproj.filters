@@ -30,6 +30,9 @@
     <ClInclude Include="HTException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HTEnumBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafxCommons.cpp">
@@ -42,6 +45,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HTException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HTEnumBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

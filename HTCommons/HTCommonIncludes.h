@@ -10,6 +10,7 @@
 #include <tchar.h>
 #include <strsafe.h>
 
+#include "../HTCommons//HTEnumBase.h"
 #include "../HTCommons/HTFuncs.h"
 #include "../HTCommons/HTException.h"
 #include "../HTCommons/HTConstants.h"

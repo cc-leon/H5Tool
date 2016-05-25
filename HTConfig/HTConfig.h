@@ -2,7 +2,9 @@
 class HTConfig : public CWinApp {
 public:
 	HTConfig();
-	~HTConfig();
+	virtual ~HTConfig();
+
+	virtual BOOL InitInstance() override;
 };
 
 extern HTConfig theApp;

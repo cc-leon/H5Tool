@@ -80,13 +80,6 @@ namespace HTDLL {
 		else {
 			::MessageBox(hWnd, "Fail1", NULL, NULL);
 		}
-		HHOOK hHook = ::SetWindowsHookEx(WH_CALLWNDPROC, callWndProc, NULL, NULL);
-		if (VALID_HANDLE(hHook)) {
-			::MessageBox(hWnd, "Success2", NULL, NULL);
-		}
-		else {
-			::MessageBox(hWnd, "Fail2", NULL, NULL);
-		}
 	}
 
 	VOID procMsg() {
