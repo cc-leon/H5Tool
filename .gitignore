@@ -1,8 +1,12 @@
 Debug
+Release
 H5Tool.sdf
 H5Tool.opensdf
 ipch
 H5Tool/Debug
+H5Tool/Release
 HTCommons/Debug
+HTCommons/Release
 HTDLL/Debug
+HTDLL/Release
 *.exe
