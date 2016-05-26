@@ -2,6 +2,8 @@
 #include "HTConfig.h"
 #include "HTConfigWnd.h"
 
+TCHAR CONST HTConfig::MY_TOKEN[] = _T("Screw this window");
+
 HTConfig::HTConfig() {
 }
 
@@ -19,15 +21,21 @@ BOOL HTConfig::InitInstance() {
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
-	CWinApp::InitInstance();
-	CONSTS.init(NULL, NULL);
+	if (CONSTS.init(MY_TOKEN) == FALSE) {
+		return FALSE;
+	}
 
 	HTConfigWnd * mainWnd = new HTConfigWnd;
-	mainWnd->Create(NULL,CONSTS.getTCHAR(LangCode::DialogTitle), 
-		WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU,CRect(300,200,100,100));
+	if (StrCmp(m_lpCmdLine, _T("Scrublord"))==0 ) {
+		mainWnd->setSlave();
+	}
+	mainWnd->Create(NULL, CONSTS.getTCHAR(LangCode::DialogTitle),
+		WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU, CRect(300, 200, 100, 100));
 	m_pMainWnd = mainWnd;
 	mainWnd->ShowWindow(SW_SHOW);
 	mainWnd->UpdateWindow();
+	
+
 	return TRUE;
 }
 

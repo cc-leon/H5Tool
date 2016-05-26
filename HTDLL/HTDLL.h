@@ -1,4 +1,7 @@
+
 namespace HTDLL {
+	TCHAR CONST token[] = _T("What a stupid DLL!");
+	HTHotkeyInfo keyInfo[5];
 	DWORD jmpBackAddy = 0;
 	DWORD currHeroAddr = 0;
 	DWORD procID = 0;

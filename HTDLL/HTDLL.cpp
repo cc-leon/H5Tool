@@ -94,6 +94,7 @@ namespace HTDLL {
 	}
 
 	DWORD WINAPI MainThread(_In_ LPVOID param) {
+		
 		int hookLength = 6;
 		DWORD hookAddress = 0x005EBE74;
 		jmpBackAddy = hookAddress + hookLength;

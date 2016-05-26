@@ -1,13 +1,18 @@
 #include "stdafxMainThread.h"
 #include "HTMainThread.h"
 
-CHAR CONST HTMainThread::HOOK_DLL_NAME[] = "D:\\Projects\\H5Tool\\Debug\\HTDLL.dll";
+CHAR CONST HTMainThread::HOOK_DLL_NAME[] = "HTDLL.dll";
+TCHAR CONST HTMainThread::CONFIG_EXE_NAME[] = _T("HTConfig.exe");
+TCHAR CONST HTMainThread::MY_TOKEN[] = _T("This app sucks");
 
 BEGIN_MESSAGE_MAP(HTMainThread, CWinApp)
 END_MESSAGE_MAP()
 
-HTMainThread::HTMainThread() {
-}
+HTMainThread::HTMainThread():
+	_hProc(NULL),
+	_procID(0),
+	_isSlave(FALSE) 
+{ }
 
 HTMainThread::~HTMainThread() {
 }
@@ -24,10 +29,17 @@ BOOL HTMainThread::InitInstance() {
 
 	CWinApp::InitInstance();
 	
+	if (StrCmp(m_lpCmdLine, _T("Scrublord")) == 0) {
+		_isSlave = TRUE;
+	}
+	
+	if (CONSTS.init(MY_TOKEN) == FALSE) {
+		return FALSE;
+	}
+
 	CFrameWnd * tempWnd = new CFrameWnd;
 	tempWnd->Create(NULL, NULL);
 	m_pMainWnd = tempWnd;
-
 
 	return TRUE;
 }
@@ -36,30 +48,40 @@ int HTMainThread::Run() {
 	_hProc = NULL;
 	_procID = NULL;
 
+	TCHAR exe[MAX_PATH];
+
+	if (CONSTS.getNoShow() == FALSE && _isSlave == FALSE) {
+		TCHAR passcode[] = _T(" Scrublord");
+		HTFuncs::getFullPath(CONFIG_EXE_NAME, exe, MAX_PATH);
+		if (_launchEXE(exe, passcode) == 0) {
+			THROW_USER("Configuration tool file is missing, the software is tempered with");
+		}
+		::WaitForSingleObject(_hProc, INFINITE);
+	}
+
 	if (_seekEXE() == FALSE) {
-		if (_launchEXE() == FALSE) {
+		HTFuncs::getFullPath(H5_EXE_NAME, exe, MAX_PATH);
+		if (_launchEXE(exe) == FALSE) {
 			THROW_USER("H5_Game.exe can be found in neither memory nor disk.");
 		}
 	}
 
 	_hookDLL(_hProc);
-
 	_sendProcID(_procID);
-
-	::WaitForSingleObject(_hProc, INFINITE);
+	
 	::CloseHandle(_hProc);
 	
 	return 0;
 }
 
-BOOL HTMainThread::_launchEXE() {
+BOOL HTMainThread::_launchEXE(_In_ TCHAR CONST * CONST fullName, _In_ TCHAR * CONST param) {
 	STARTUPINFO startInfo;
 	PROCESS_INFORMATION procInfo;
 	::ZeroMemory(&startInfo, sizeof(startInfo));
 	::ZeroMemory(&procInfo, sizeof(procInfo));
 
-	BOOL br = CreateProcess(H5_EXE_NAME,
-		NULL, NULL, NULL,
+	BOOL br = ::CreateProcess(fullName,
+		param, NULL, NULL,
 		FALSE,
 		NULL, NULL, NULL,
 		&startInfo, &procInfo);
@@ -100,18 +122,41 @@ BOOL HTMainThread::_seekEXE() {
 
 HANDLE HTMainThread::_hookDLL(_In_ HANDLE CONST hProc) {
 	LPVOID procAddr = NULL;
+	HRESULT hr = S_OK;
+
+	CHAR dllFullName[MAX_PATH];
+	if (::GetCurrentDirectoryA(MAX_PATH, dllFullName) == 0) {
+		THROW_API("GetCurrentDirectoryA", 0, "");
+	}
+	size_t len = 0;
+	hr = ::StringCchLengthA(dllFullName, MAX_PATH, &len);
+	if (FAILED(hr)) {
+		THROW_API("StringCchLengthA", hr, "");
+	}
+	if (dllFullName[len - 1] != '\\') {
+		dllFullName[len] = '\\';
+		dllFullName[len + 1] = 0;
+	}
+	hr = ::StringCchCatA(dllFullName, MAX_PATH, HOOK_DLL_NAME);
+	if (FAILED(hr)) {
+		THROW_API("StringCchCatA", hr, "");
+	}
+	hr = ::StringCchLengthA(dllFullName, MAX_PATH, &len);
+	if (FAILED(hr)) {
+		THROW_API("StringCchLengthA", hr, "");
+	}
 
 	procAddr = (LPVOID)GetProcAddress(GetModuleHandle(_T("kernel32.dll")), "LoadLibraryA");
 	if (procAddr == NULL) {
 		THROW_API("GetProcAddress",NULL,"The LoadLibraryW function was not found inside kernel32.dll library.");
 	}
 
-	LPVOID memLoc = (LPVOID)VirtualAllocEx(hProc, NULL, strlen(HOOK_DLL_NAME), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	LPVOID memLoc = (LPVOID)VirtualAllocEx(hProc, NULL, len, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	if (memLoc == NULL) {
 		THROW_API("VirtualAllocEx", NULL, "The memory could not be allocated inside the chosen process.");
 	}
 
-	int n = WriteProcessMemory(hProc, memLoc, HOOK_DLL_NAME, strlen(HOOK_DLL_NAME), NULL);
+	int n = WriteProcessMemory(hProc, memLoc, dllFullName, len, NULL);
 	if( n == 0) {
 		THROW_API("WriteProcessMemory", 0, "There was no bytes written to the process's address space.");
 	}
@@ -127,7 +172,7 @@ HANDLE HTMainThread::_hookDLL(_In_ HANDLE CONST hProc) {
 
 VOID HTMainThread::_sendProcID(_In_ DWORD CONST procID) {
 	HANDLE hPipe = ::CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_WRITE_THROUGH,
-		PIPE_TYPE_MESSAGE, PIPE_UNLIMITED_INSTANCES, NULL, NULL, NULL, NULL);
+		PIPE_TYPE_MESSAGE, PIPE_UNLIMITED_INSTANCES, NULL, NULL, INFINITE, NULL);
 	DWORD cc = GetLastError();
 	if (!VALID_HANDLE(hPipe)) {
 		THROW_API("CreateNamedPipe", hPipe, " ");
