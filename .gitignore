@@ -13,4 +13,5 @@ HTConfig/Debug
 HTConfig/Release
 H5Tool_Installer/Debug
 H5Tool_Installer/Release
+data
 *.exe
