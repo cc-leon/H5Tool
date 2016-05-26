@@ -20,4 +20,3 @@ public:
 };
 
 #define ENUM_BODY using HTEnumBase::operator=
-

@@ -128,6 +128,7 @@
     <ClInclude Include="HTEnumBase.h" />
     <ClInclude Include="HTException.h" />
     <ClInclude Include="HTFuncs.h" />
+    <ClInclude Include="HTHotkeyInfo.h" />
     <ClInclude Include="stdafxCommons.h" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +136,7 @@
     <ClCompile Include="HTEnumBase.cpp" />
     <ClCompile Include="HTException.cpp" />
     <ClCompile Include="HTFuncs.cpp" />
+    <ClCompile Include="HTHotkeyInfo.cpp" />
     <ClCompile Include="stdafxCommons.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

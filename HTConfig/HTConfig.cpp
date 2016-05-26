@@ -20,12 +20,14 @@ BOOL HTConfig::InitInstance() {
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
+	CONSTS.init(NULL, NULL);
 
 	HTConfigWnd * mainWnd = new HTConfigWnd;
-	mainWnd->Create(NULL, NULL, 
-		WS_VISIBLE | WS_CAPTION | WS_BORDER | WS_SYSMENU);
+	mainWnd->Create(NULL,CONSTS.getTCHAR(LangCode::DialogTitle), 
+		WS_CAPTION | WS_OVERLAPPED | WS_SYSMENU,CRect(300,200,100,100));
 	m_pMainWnd = mainWnd;
-
+	mainWnd->ShowWindow(SW_SHOW);
+	mainWnd->UpdateWindow();
 	return TRUE;
 }
 

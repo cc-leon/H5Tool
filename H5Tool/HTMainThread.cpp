@@ -1,7 +1,6 @@
 #include "stdafxMainThread.h"
 #include "HTMainThread.h"
 
-TCHAR CONST HTMainThread::H5_EXE_NAME[] = _T("H5_Game.exe");
 CHAR CONST HTMainThread::HOOK_DLL_NAME[] = "D:\\Projects\\H5Tool\\Debug\\HTDLL.dll";
 
 BEGIN_MESSAGE_MAP(HTMainThread, CWinApp)
@@ -24,10 +23,11 @@ BOOL HTMainThread::InitInstance() {
 	InitCommonControlsEx(&InitCtrls);
 
 	CWinApp::InitInstance();
-
+	
 	CFrameWnd * tempWnd = new CFrameWnd;
 	tempWnd->Create(NULL, NULL);
 	m_pMainWnd = tempWnd;
+
 
 	return TRUE;
 }

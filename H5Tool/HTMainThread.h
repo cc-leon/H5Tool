@@ -10,7 +10,6 @@ protected:
 	VOID _sendProcID(_In_ DWORD CONST procID);
 
 public:
-	static TCHAR CONST H5_EXE_NAME[];
 	static CHAR CONST HOOK_DLL_NAME[];
 
 	HTMainThread();
