@@ -137,7 +137,6 @@ namespace HTDLL {
 				FREE(buffer);
 			}
 			else {
-				::MessageBox(GVars::hWnd, "No hotkey data", "", NULL);
 				__generateDefaultHotkeyData();
 			}
 		}
@@ -166,13 +165,12 @@ namespace HTDLL {
 			DWORD * creatureSlotPtrs = (DWORD*)*heroCreaturePos;
 
 			INT mainSlot = __getFirstCreature();
-			Funcs::popMsgBox(mainSlot);
 
 			for (int i = 0; i < MAX_SLOTS; i++) {
 				if (getCreatureAddr(i) == NULL) {
 					if (*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) - amount > 0) {
 						BYTE * content = (BYTE*)VirtualAllocEx(GetCurrentProcess(), NULL, GVars::addrCodes[(int)AddrCode::DataLen],
-							MEM_COMMIT, PAGE_READWRITE);
+							MEM_COMMIT|MEM_TOP_DOWN, PAGE_READWRITE);
 						::memcpy(content, getCreatureAddr(mainSlot), GVars::addrCodes[(int)AddrCode::DataLen]);
 						*(creatureSlotPtrs + i) = (DWORD)content;
 						*(getCreatureAddr(i) + GVars::addrCodes[(int)AddrCode::AmtOffset]) = amount;
@@ -206,7 +204,52 @@ namespace HTDLL {
 		}
 
 		VOID combineUnit() {
-
+			DWORD *heroCreaturePos = (DWORD*)(GVars::currHeroAddr + GVars::addrCodes[(int)AddrCode::Offset]);
+			DWORD * creatureSlotPtrs = (DWORD*)*heroCreaturePos;
+			DWORD *iAddr = NULL, *jAddr = NULL;
+			for (int i = 0; i < MAX_SLOTS; i++) {
+				iAddr = getCreatureAddr(i);
+				if (iAddr != NULL) {
+					DWORD amount = *(iAddr + GVars::addrCodes[(int)AddrCode::AmtOffset]);
+					DWORD type = *(iAddr + GVars::addrCodes[(int)AddrCode::TypeOffset]);
+					BOOL foundMax = TRUE;
+					for (int j = i + 1; j < MAX_SLOTS;j++) {
+						jAddr = getCreatureAddr(j);
+						if (jAddr != NULL) {
+							if (*(jAddr + GVars::addrCodes[(int)AddrCode::TypeOffset]) == type) {
+								if (amount < *(jAddr + GVars::addrCodes[(int)AddrCode::AmtOffset])) {
+									foundMax = FALSE;
+									break;
+								}
+							}
+						}
+					}
+					if (foundMax) {
+						for (int j = 0; j < MAX_SLOTS;j++) {
+							jAddr = getCreatureAddr(j);
+							if (jAddr != NULL && j != i) {
+								if (*(jAddr + GVars::addrCodes[(int)AddrCode::TypeOffset]) == type) {
+									*(iAddr + GVars::addrCodes[(int)AddrCode::AmtOffset]) += *(jAddr + GVars::addrCodes[(int)AddrCode::AmtOffset]);
+									VirtualAlloc(jAddr, GVars::addrCodes[(int)AddrCode::DataLen], MEM_RESET, PAGE_READWRITE);
+									*(creatureSlotPtrs + j) = 0;
+								}
+							}
+						}
+					}
+					/*
+					if (*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) - amount > 0) {
+						BYTE * content = (BYTE*)VirtualAllocEx(GetCurrentProcess(), NULL, GVars::addrCodes[(int)AddrCode::DataLen],
+							MEM_COMMIT, PAGE_READWRITE);
+						::memcpy(content, getCreatureAddr(mainSlot), GVars::addrCodes[(int)AddrCode::DataLen]);
+						*(creatureSlotPtrs + i) = (DWORD)content;
+						*(getCreatureAddr(i) + GVars::addrCodes[(int)AddrCode::AmtOffset]) = amount;
+						*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) -= amount;
+					}
+					else {
+						break;
+					}*/
+				}
+			}
 		}
 
 		VOID splitCaster() {
@@ -248,14 +291,14 @@ namespace HTDLL {
 
 	namespace ASMs {
 		void __declspec(naked) asmFunc31() {
-			/*static int i = 0;
+			static int i = 0;
 			i++;
 			if (i > 100) {
 				GVars::advTicks = GetTickCount();
 			}
 			else {
 				i = 0;
-			}*/
+			}
 			
 			__asm {
 				mov ecx, [esi + 04]
