@@ -16,9 +16,7 @@ namespace HTDLL {
 			DWORD cbRead = 0;
 			DWORD fileVer = 0;
 			::ReadFile(hPipe, &GVars::procID, sizeof(GVars::procID), &cbRead, NULL);
-			CHAR aaa[20];
-			_itoa_s(GVars::procID, aaa, 20, 10);
-			AfxMessageBox(aaa);
+			Funcs::popMsgBox(GVars::procID);
 			::ReadFile(hPipe, &fileVer, sizeof(fileVer), &cbRead, NULL);
 			GVars::h5Ver = (FileVersion)fileVer;
 			::CloseHandle(hPipe);
@@ -29,7 +27,20 @@ namespace HTDLL {
 		}
 
 		VOID setKey() {
-			BOOL br = ::RegisterHotKey(NULL, 1234, MOD_CONTROL, 0x31);
+			for (int i = 0; i < (int)KeyCode::MAX;i++) {
+				UINT fsModifiers = 0;
+				if (GVars::keyInfo[i].ctrl) {
+					fsModifiers |= MOD_CONTROL;
+				}
+				if (GVars::keyInfo[i].shift) {
+					fsModifiers |= MOD_SHIFT;
+				}
+				if (GVars::keyInfo[i].alt) {
+					fsModifiers |= MOD_ALT;
+				}
+
+				BOOL br = ::RegisterHotKey(NULL, i, fsModifiers, GVars::keyInfo[i].vs_key);
+			}
 		}
 
 		VOID procMsg() {
@@ -37,23 +48,169 @@ namespace HTDLL {
 			if (::PeekMessage(&msg, NULL, NULL, NULL, PM_NOREMOVE)) {
 				::GetMessage(&msg, NULL, NULL, NULL);
 				::TranslateMessage(&msg);
-				CHAR aaa[20];
-				_itoa_s(LOWORD(msg.message), aaa, 20, 16);
-				MessageBox(GVars::hWnd, aaa, "", NULL);
+				if (LOWORD(msg.message) == WM_HOTKEY) {
+					switch ((KeyCode)msg.wParam) {
+					case KeyCode::S1:
+						splitUnit(1);
+						break;
+					case KeyCode::S2:
+						splitUnit(2);
+						break;
+					case KeyCode::SP:
+						splitCaster();
+						break;
+					case KeyCode::SC:
+						splitUnit(GVars::keyInfo[(int)KeyCode::SC].amount);
+						break;
+					case KeyCode::CS:
+						combineUnit();
+						break;
+					default:
+						THROW_USER("Unhandled key code");
+						break;
+					}
+				}
 			}
 		}
 
-		VOID fillAddrCodes() {
+		VOID __fillAddr31() {
+			for (int i = 0; i < (int)AddrCode::MAX;i++) {
+				switch ((AddrCode)i) {
+				case AddrCode::Start:
+					GVars::addrCodes[i] = 0x005EBE74;
+					break;
+				case AddrCode::Len:
+					GVars::addrCodes[i] = 6;
+					break;
+				case AddrCode::Offset:
+					GVars::addrCodes[i] = 0x110;
+					break;
+				case AddrCode::DataLen:
+					GVars::addrCodes[i] = 0x100;
+					break;
+				case AddrCode::TypeOffset:
+					GVars::addrCodes[i] = 0x7;
+					break;
+				case AddrCode::AmtOffset:
+					GVars::addrCodes[i] = 0x8;
+					break;
+				default:
+					THROW_USER("Invalid address code");
+					break;
+				}
+			}
+		}
+		VOID __fileAddr30() {
 
+		}
+
+		VOID fillAddrCodes() {
+			switch (GVars::h5Ver) {
+			case FileVersion::THREE_ONE:
+				__fillAddr31();
+				break;
+			case FileVersion::THREE_ZERO:
+				__fileAddr30();
+				break;
+			default:
+				THROW_USER("Invalid version code");
+				break;
+			}
 		}
 
 		VOID readHotkeyData() {
 			::ZeroMemory(&GVars::keyInfo, sizeof(GVars::keyInfo));
-			HTHotkeyInfo *reader;
 			CHAR configFullName[MAX_PATH];
 			Funcs::getFullPath(Files::CONFIG_FILE_NAME, configFullName, MAX_PATH);
 
-			//BYTE = ALLOC(BYTE, );
+			CFile file;
+			if (file.Open(configFullName, CFile::typeBinary | CFile::modeRead)) {
+				BYTE * CONST buffer = ALLOC(BYTE, file.GetLength());
+				file.Read(buffer, (UINT)file.GetLength());
+				file.Close();
+
+				HTHotkeyInfo *reader = reinterpret_cast<HTHotkeyInfo*> (buffer);
+				for (int i = 0; i < (int) KeyCode::MAX;i++) {
+					GVars::keyInfo[i] = *reader;
+					reader++;
+				}
+				FREE(buffer);
+			}
+			else {
+				::MessageBox(GVars::hWnd, "No hotkey data", "", NULL);
+				__generateDefaultHotkeyData();
+			}
+		}
+
+		VOID __generateDefaultHotkeyData() {
+			::ZeroMemory(GVars::keyInfo, sizeof(GVars::keyInfo));
+			GVars::keyInfo[(int)KeyCode::S1].ctrl = TRUE;
+			GVars::keyInfo[(int)KeyCode::S1].vs_key = 0x31;
+			GVars::keyInfo[(int)KeyCode::S2].ctrl = TRUE;
+			GVars::keyInfo[(int)KeyCode::S2].vs_key = 0x32;
+			GVars::keyInfo[(int)KeyCode::SP].ctrl = TRUE;
+			GVars::keyInfo[(int)KeyCode::SP].vs_key = 0x53;
+			GVars::keyInfo[(int)KeyCode::SC].ctrl = TRUE;
+			GVars::keyInfo[(int)KeyCode::SC].vs_key = 0x41;
+			GVars::keyInfo[(int)KeyCode::SC].amount = 4;
+			GVars::keyInfo[(int)KeyCode::CS].ctrl = TRUE;
+			GVars::keyInfo[(int)KeyCode::CS].vs_key = 0x43;
+		}
+
+		VOID splitUnit(_In_ DWORD CONST amount) {
+			if (amount == 0) {
+				return;
+			}
+			
+			DWORD *heroCreaturePos = (DWORD*)(GVars::currHeroAddr + GVars::addrCodes[(int)AddrCode::Offset]);
+			DWORD * creatureSlotPtrs = (DWORD*)*heroCreaturePos;
+
+			INT mainSlot = __getFirstCreature();
+			Funcs::popMsgBox(mainSlot);
+
+			for (int i = 0; i < MAX_SLOTS; i++) {
+				if (getCreatureAddr(i) == NULL) {
+					if (*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) - amount > 0) {
+						BYTE * content = (BYTE*)VirtualAllocEx(GetCurrentProcess(), NULL, GVars::addrCodes[(int)AddrCode::DataLen],
+							MEM_COMMIT, PAGE_READWRITE);
+						::memcpy(content, getCreatureAddr(mainSlot), GVars::addrCodes[(int)AddrCode::DataLen]);
+						*(creatureSlotPtrs + i) = (DWORD)content;
+						*(getCreatureAddr(i) + GVars::addrCodes[(int)AddrCode::AmtOffset]) = amount;
+						*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) -= amount;
+					}
+					else {
+						break;
+					}
+				}
+			}
+		}
+
+		DWORD * getCreatureAddr(_In_ INT CONST slotNum) {
+			if (slotNum >= 0 && slotNum < MAX_SLOTS) {
+				DWORD *heroCreaturePos = (DWORD*)(GVars::currHeroAddr + GVars::addrCodes[(int)AddrCode::Offset]);
+				DWORD * creatureSlotPtrs = (DWORD*)*heroCreaturePos;
+				return (DWORD*)*(creatureSlotPtrs+slotNum);
+			}
+			else {
+				THROW_USER("Invalid slot number parameter");
+			}
+		}
+
+		INT __getFirstCreature() {
+			for (int i = 0; i < MAX_SLOTS; i++) {
+				if (getCreatureAddr(i) != NULL) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		VOID combineUnit() {
+
+		}
+
+		VOID splitCaster() {
+
 		}
 	}
 
@@ -81,10 +238,25 @@ namespace HTDLL {
 				THROW_API("StringCchCat", hr, "");
 			}
 		}
+
+		VOID popMsgBox(_In_ int CONST number,_In_ int CONST radix) {
+			CHAR num[20];
+			_itoa_s(number, num, 20, radix);
+			MessageBox(GVars::hWnd, num, "", NULL);
+		}
 	}
 
 	namespace ASMs {
 		void __declspec(naked) asmFunc31() {
+			/*static int i = 0;
+			i++;
+			if (i > 100) {
+				GVars::advTicks = GetTickCount();
+			}
+			else {
+				i = 0;
+			}*/
+			
 			__asm {
 				mov ecx, [esi + 04]
 					mov GVars::currHeroAddr, ecx
@@ -95,9 +267,7 @@ namespace HTDLL {
 	}
 
 	namespace ClBks {
-		LRESULT CALLBACK callWndProc(_In_ int nCode, _In_ WPARAM wParam, _In_ LPARAM lParam) {
-			return 0;
-		}
+		
 		BOOL CALLBACK enumWndProc(_In_ HWND hwnd, _In_ LPARAM lParam) {
 			DWORD tID = 0, pID = 0;
 			tID = ::GetWindowThreadProcessId(hwnd, &pID);
@@ -139,16 +309,21 @@ namespace HTDLL {
 
 	DWORD WINAPI MainThread(_In_ LPVOID param) {
 		Procs::getProcIDAndVer();
+		Procs::fillAddrCodes();
 		Procs::seekHWnd();
+		Procs::readHotkeyData();
 		Procs::setKey();
 
-		int hookLength = 6;
-		DWORD hookAddress = 0x005EBE74;
-		GVars::jmpBackAddy = hookAddress + hookLength;
+		//int hookLength = 6;
+		//DWORD hookAddress = 0x005EBE74;
+		GVars::jmpBackAddy = GVars::addrCodes[(int)AddrCode::Start] + GVars::addrCodes[(int)AddrCode::Len];
 
 		switch (GVars::h5Ver) {
 		case FileVersion::THREE_ONE:
-			hookFunc((void*)hookAddress, ASMs::asmFunc31, hookLength);
+			hookFunc(
+				(void*)GVars::addrCodes[(int)AddrCode::Start], 
+				ASMs::asmFunc31,
+				GVars::addrCodes[(int)AddrCode::Len]);
 			break;
 		case FileVersion::THREE_ZERO:
 			break;
@@ -160,9 +335,7 @@ namespace HTDLL {
 
 		while (true) {
 			if (GetAsyncKeyState(VK_RCONTROL)) {
-				CHAR aaa[20];
-				_itoa_s(GVars::currHeroAddr, aaa, 20, 16);
-				MessageBox(GVars::hWnd, aaa, "", NULL);
+				break;
 			}
 			Procs::procMsg();
 			Sleep(50);

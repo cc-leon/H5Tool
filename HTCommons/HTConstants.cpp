@@ -287,6 +287,7 @@ VOID HTConstants::_loadHotkeyInfo() {
 			_hotkeyInfo[i] = *reader;
 			reader++;
 		}
+		FREE(buffer);
 	}
 	else {
 		_generateDefaultHotkeyInfo();
@@ -329,6 +330,8 @@ VOID HTConstants::_loadWeblink() {
 		TCHAR * newLink = ALLOC(TCHAR,file.GetLength() + 1);
 		HTFuncs::char2TCHAR((char*)(buffer), newLink);
 		_weblink = newLink;
+		FREE(buffer);
+		FREE(newLink);
 	}
 	else {
 		_generateDefaultWeblink();

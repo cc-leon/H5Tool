@@ -110,6 +110,7 @@ namespace HTFuncs {
 
 		hVer = HIWORD(info->dwProductVersionMS);
 		lVer = LOWORD(info->dwProductVersionMS);
+		FREE(pBlock);
 	}
 
 	BOOL getChineseLocal() {
