@@ -125,10 +125,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FileVersion.h" />
     <ClInclude Include="HTCommonIncludes.h" />
     <ClInclude Include="HTConstants.h" />
     <ClInclude Include="HTEnumBase.h" />
     <ClInclude Include="HTException.h" />
+    <ClInclude Include="HTFileNames.h" />
     <ClInclude Include="HTFuncs.h" />
     <ClInclude Include="HTHotkeyInfo.h" />
     <ClInclude Include="stdafxCommons.h" />
@@ -137,6 +139,7 @@
     <ClCompile Include="HTConstants.cpp" />
     <ClCompile Include="HTEnumBase.cpp" />
     <ClCompile Include="HTException.cpp" />
+    <ClCompile Include="HTFileNames.cpp" />
     <ClCompile Include="HTFuncs.cpp" />
     <ClCompile Include="HTHotkeyInfo.cpp" />
     <ClCompile Include="stdafxCommons.cpp" />

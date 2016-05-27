@@ -15,10 +15,10 @@
 #include <strsafe.h>
 #include <Psapi.h>
 
-#pragma comment(lib, "../HTCommons/sqlite3.lib")
 #pragma comment(lib, "Psapi.lib")
 #pragma comment(lib, "version.lib")
 
+#include "../HTCommons/HTFileNames.h"
 #include "../HTCommons/HTEnumBase.h"
 #include "../HTCommons/HTFuncs.h"
 #include "../HTCommons/HTException.h"

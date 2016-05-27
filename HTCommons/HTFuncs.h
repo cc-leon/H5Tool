@@ -18,4 +18,5 @@ namespace HTFuncs {
 	BOOL getChineseLocal();
 	VOID getFileVersion(_In_ TCHAR CONST * CONST fullName, _Out_ DWORD& hVer, _Out_ DWORD& lVer);
 	VOID getKeyString(_In_ HTHotkeyInfo CONST& keyInfo, _Out_ TCHAR * CONST dest);
+	HANDLE runEXE(_In_ TCHAR CONST * CONST fullName, _In_ TCHAR * CONST param = NULL, _Out_opt_ DWORD * CONST procID = NULL);
 }

@@ -149,6 +149,7 @@ protected:
 	static VOID _fillCombo(_In_ CComboBox& cmb);
 	VOID _fillBlanks();
 	VOID _switchMode(_In_ BOOL CONST configMode);
+	VOID _sendUninstallSignal(_In_ BOOL CONST uninstall);
 public:
 	DECLARE_DYNAMIC(HTConfigWnd)
 	

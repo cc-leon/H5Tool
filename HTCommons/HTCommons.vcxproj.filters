@@ -32,6 +32,12 @@
     <ClInclude Include="HTHotkeyInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FileVersion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HTFileNames.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafxCommons.cpp">
@@ -50,6 +56,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HTHotkeyInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HTFileNames.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

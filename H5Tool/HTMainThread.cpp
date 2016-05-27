@@ -1,8 +1,6 @@
 #include "stdafxMainThread.h"
 #include "HTMainThread.h"
 
-CHAR CONST HTMainThread::HOOK_DLL_NAME[] = "HTDLL.dll";
-TCHAR CONST HTMainThread::CONFIG_EXE_NAME[] = _T("HTConfig.exe");
 TCHAR CONST HTMainThread::MY_TOKEN[] = _T("This app sucks");
 
 BEGIN_MESSAGE_MAP(HTMainThread, CWinApp)
@@ -52,44 +50,29 @@ int HTMainThread::Run() {
 
 	if (CONSTS.getNoShow() == FALSE && _isSlave == FALSE) {
 		TCHAR passcode[] = _T(" Scrublord");
-		HTFuncs::getFullPath(CONFIG_EXE_NAME, exe, MAX_PATH);
-		if (_launchEXE(exe, passcode) == 0) {
+		HTFuncs::getFullPath(Files::CONFIG_EXE_NAME, exe, MAX_PATH);
+		HANDLE hTemp = HTFuncs::runEXE(exe, passcode);
+		if (!VALID_HANDLE(hTemp)) {
 			THROW_USER("Configuration tool file is missing, the software is tempered with");
 		}
+		BOOL uninst = _getUninstallSignal();
 		::WaitForSingleObject(_hProc, INFINITE);
 	}
 
 	if (_seekEXE() == FALSE) {
-		HTFuncs::getFullPath(H5_EXE_NAME, exe, MAX_PATH);
-		if (_launchEXE(exe) == FALSE) {
+		HTFuncs::getFullPath(Files::H5_EXE_NAME, exe, MAX_PATH);
+		_hProc = HTFuncs::runEXE(exe,NULL,&_procID);
+		if (!VALID_HANDLE(_hProc)) {
 			THROW_USER("H5_Game.exe can be found in neither memory nor disk.");
 		}
 	}
 
 	_hookDLL(_hProc);
-	_sendProcID(_procID);
+	_sendProcIDAndVer(_procID);
 	
 	::CloseHandle(_hProc);
 	
 	return 0;
-}
-
-BOOL HTMainThread::_launchEXE(_In_ TCHAR CONST * CONST fullName, _In_ TCHAR * CONST param) {
-	STARTUPINFO startInfo;
-	PROCESS_INFORMATION procInfo;
-	::ZeroMemory(&startInfo, sizeof(startInfo));
-	::ZeroMemory(&procInfo, sizeof(procInfo));
-
-	BOOL br = ::CreateProcess(fullName,
-		param, NULL, NULL,
-		FALSE,
-		NULL, NULL, NULL,
-		&startInfo, &procInfo);
-
-	_hProc = procInfo.hProcess;
-	_procID = procInfo.dwProcessId;
-
-	return br;
 }
 
 BOOL HTMainThread::_seekEXE() {
@@ -105,7 +88,7 @@ BOOL HTMainThread::_seekEXE() {
 			if(::GetModuleFileNameEx(hProc, NULL, fileName, _1K) != 0) {
 				size_t slen = HTFuncs::getFileName(fileName, fileName);
 				if (slen > 0) {
-					int cmpRes = ::StrCmp(fileName, H5_EXE_NAME);
+					int cmpRes = ::StrCmp(fileName, Files::H5_EXE_NAME);
 					if (cmpRes == 0) {
 						_hProc = hProc;
 						_procID = procIDs[i];
@@ -137,7 +120,7 @@ HANDLE HTMainThread::_hookDLL(_In_ HANDLE CONST hProc) {
 		dllFullName[len] = '\\';
 		dllFullName[len + 1] = 0;
 	}
-	hr = ::StringCchCatA(dllFullName, MAX_PATH, HOOK_DLL_NAME);
+	hr = ::StringCchCatA(dllFullName, MAX_PATH, Files::HOOK_DLL_NAME_A);
 	if (FAILED(hr)) {
 		THROW_API("StringCchCatA", hr, "");
 	}
@@ -170,8 +153,8 @@ HANDLE HTMainThread::_hookDLL(_In_ HANDLE CONST hProc) {
 	return 0;
 }
 
-VOID HTMainThread::_sendProcID(_In_ DWORD CONST procID) {
-	HANDLE hPipe = ::CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_WRITE_THROUGH,
+VOID HTMainThread::_sendProcIDAndVer(_In_ DWORD CONST procID) {
+	HANDLE hPipe = ::CreateNamedPipe(Files::PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_WRITE_THROUGH,
 		PIPE_TYPE_MESSAGE, PIPE_UNLIMITED_INSTANCES, NULL, NULL, INFINITE, NULL);
 	DWORD cc = GetLastError();
 	if (!VALID_HANDLE(hPipe)) {
@@ -179,9 +162,26 @@ VOID HTMainThread::_sendProcID(_In_ DWORD CONST procID) {
 	}
 
 	::ConnectNamedPipe(hPipe, NULL);
-	::WriteFile(hPipe, &procID, sizeof(procID), NULL, NULL);
-	
+	DWORD cbSize = 0;
+	::WriteFile(hPipe, &procID, sizeof(procID), &cbSize, NULL);
+	DWORD fileVer = (DWORD)CONSTS.getFileVersion();
+	::WriteFile(hPipe, &fileVer, sizeof(fileVer), &cbSize, NULL);
 	::CloseHandle(hPipe);
+}
+
+BOOL HTMainThread::_getUninstallSignal() {
+	HANDLE hPipe = ::CreateNamedPipe(Files::PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_WRITE_THROUGH,
+		PIPE_TYPE_MESSAGE, PIPE_UNLIMITED_INSTANCES, NULL, NULL, INFINITE, NULL);
+	DWORD cc = GetLastError();
+	if (!VALID_HANDLE(hPipe)) {
+		THROW_API("CreateNamedPipe", hPipe, " ");
+	}
+
+	::ConnectNamedPipe(hPipe, NULL);
+	BOOL uninstallResult = FALSE; DWORD cbRecv = 0;
+	::ReadFile(hPipe, &uninstallResult, sizeof(uninstallResult), &cbRecv, NULL);
+	::CloseHandle(hPipe);
+	return uninstallResult;
 }
 
 HTMainThread mainThread;

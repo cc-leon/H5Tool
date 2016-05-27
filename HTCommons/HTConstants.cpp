@@ -1,10 +1,6 @@
 #include "stdafxCommons.h"
 #include "HTConstants.h"
 
-TCHAR CONST HTConstants::WIDECHAR_FILE_NAME[] = _T("widechar.chk");
-TCHAR CONST HTConstants::CONFIG_FILE_NAME[] = _T("HTHotkey.cfg");
-TCHAR CONST HTConstants::WEBLINK_FILE_NAME[] = _T("Weblink.txt");
-TCHAR CONST HTConstants::NOSHOW_FILE_NAME[] = _T("NoShow.cfg");
 HTConstants::HTConstants():
 	_started(FALSE)
 { }
@@ -17,45 +13,6 @@ HTConstants::~HTConstants() {
 HTConstants& HTConstants::get() {
 	static HTConstants instance;
 	return instance;
-}
-
-VOID HTConstants::_write31() {
-	for (AddrCode i = (AddrCode)0; i < AddrCode::MAX; i = (AddrCode)((int)i + 1)) {
-		switch (i) {
-		case AddrCode::Start:
-			_addr[(int)i] = 0x005EBE74;
-			break;
-		case AddrCode::Len:
-			_addr[(int)i] = 6;
-			break;
-		case AddrCode::Offset:
-			_addr[(int)i] = 0x00000000;
-			break;
-		case AddrCode::MAX:
-			break;
-		default:
-			THROW_USER("Unhandled addr codes");
-			break;
-		}
-	}
-}
-
-VOID HTConstants::_write30() {
-	for (AddrCode i = (AddrCode)0; i < AddrCode::MAX; i = (AddrCode)((int)i + 1)) {
-		switch (i) {
-		case AddrCode::Start:
-			break;
-		case AddrCode::Len:
-			break;
-		case AddrCode::Offset:
-			break;
-		case AddrCode::MAX:
-			break;
-		default:
-			THROW_USER("Unhandled addr codes");
-			break;
-		}
-	}
 }
 
 VOID HTConstants::_writeChinese() {
@@ -223,17 +180,6 @@ VOID HTConstants::_writeEnglish() {
 }
 
 VOID HTConstants::_writeConstants() {
-	switch (_ver) {
-	case FileVersion::THREE_ONE:
-		_write31();
-		break;
-	case FileVersion::THREE_ZERO:
-		_write30();
-		break;
-	default:
-		THROW_USER("Unhandled version code");
-		break;
-	}
 
 	switch (_lang)
 	{
@@ -272,7 +218,7 @@ BOOL HTConstants::init(_In_ TCHAR CONST * CONST token, _In_ BOOL CONST chinese) 
 		if (FAILED(hr)) {
 			THROW_API("StringCchCat", hr, "");
 		}
-		hr = ::StringCchCat(fileName, _1K, WIDECHAR_FILE_NAME);
+		hr = ::StringCchCat(fileName, _1K, Files::WIDECHAR_FILE_NAME);
 		if (FAILED(hr)) {
 			THROW_API("StringCchCat", hr, "");
 		}
@@ -285,7 +231,7 @@ BOOL HTConstants::init(_In_ TCHAR CONST * CONST token, _In_ BOOL CONST chinese) 
 		}
 	}
 	
-	HTFuncs::getFullPath(H5_EXE_NAME, fileName, MAX_PATH);
+	HTFuncs::getFullPath(Files::H5_EXE_NAME, fileName, MAX_PATH);
 	
 	DWORD hVer = 0, lVer = 0;
 	HTFuncs::getFileVersion(fileName, hVer, lVer);
@@ -323,13 +269,6 @@ TCHAR CONST * HTConstants::getTCHAR(_In_ LangCode CONST code) const {
 	return _str[(int)code];
 }
 
-DWORD HTConstants::getDWORD(_In_ AddrCode CONST code) const {
-	if (_started == FALSE) {
-		THROW_USER("Attempt to call a method without calling init() first!");
-	}
-	return _addr[(int)code];
-}
-
 HTHotkeyInfo& HTConstants::getHotkey(_In_ INT CONST code) {
 	if (_started == FALSE) {
 		THROW_USER("Attempt to call a method without calling init() first!");
@@ -339,7 +278,7 @@ HTHotkeyInfo& HTConstants::getHotkey(_In_ INT CONST code) {
 
 VOID HTConstants::_loadHotkeyInfo() {
 	CFile file;
-	if (file.Open(CONFIG_FILE_NAME, CFile::typeBinary | CFile::modeRead)) {
+	if (file.Open(Files::CONFIG_FILE_NAME, CFile::typeBinary | CFile::modeRead)) {
 		BYTE * CONST buffer = ALLOC(BYTE, file.GetLength());
 		HTHotkeyInfo * reader = reinterpret_cast<HTHotkeyInfo*>(buffer);
 
@@ -374,7 +313,7 @@ VOID HTConstants::saveHotkeyInfo() {
 		THROW_USER("Attempt to call a method without calling init() first!");
 	}
 
-	CFile file(CONFIG_FILE_NAME, CFile::typeBinary | CFile::modeWrite | CFile::modeCreate);
+	CFile file(Files::CONFIG_FILE_NAME, CFile::typeBinary | CFile::modeWrite | CFile::modeCreate);
 	file.Write(&_hotkeyInfo, sizeof(_hotkeyInfo));
 	file.Close();
 }
@@ -382,7 +321,7 @@ VOID HTConstants::saveHotkeyInfo() {
 VOID HTConstants::_loadWeblink() {
 	CFile file;
 	TCHAR linkFile[MAX_PATH];
-	HTFuncs::getFullPath(WEBLINK_FILE_NAME, linkFile, MAX_PATH);
+	HTFuncs::getFullPath(Files::WEBLINK_FILE_NAME, linkFile, MAX_PATH);
 	if (file.Open(linkFile, CFile::typeUnicode | CFile::modeRead)) {
 		BYTE * buffer = ALLOC(BYTE, file.GetLength()+1);
 		buffer[file.GetLength()] = 0;
@@ -420,7 +359,7 @@ BOOL HTConstants::getNoShow() {
 	}
 	CFile file;
 	TCHAR noshowFile[MAX_PATH];
-	HTFuncs::getFullPath(NOSHOW_FILE_NAME, noshowFile, MAX_PATH);
+	HTFuncs::getFullPath(Files::NOSHOW_FILE_NAME, noshowFile, MAX_PATH);
 	if (file.Open(noshowFile, CFile::modeRead | CFile::typeBinary)) {
 		file.Close();
 		return TRUE;
@@ -435,7 +374,7 @@ VOID HTConstants::setNoShow(_In_ BOOL CONST noShow) {
 		THROW_USER("Attempt to call a method without calling init() first!");
 	}
 	TCHAR noshowFile[MAX_PATH];
-	HTFuncs::getFullPath(NOSHOW_FILE_NAME, noshowFile, MAX_PATH);
+	HTFuncs::getFullPath(Files::NOSHOW_FILE_NAME, noshowFile, MAX_PATH);
 	if (noShow) {
 		CFile file(noshowFile, CFile::modeCreate|CFile::modeWrite);
 		file.Close();

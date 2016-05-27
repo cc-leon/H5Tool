@@ -17,6 +17,15 @@
     <ClInclude Include="stdafxDLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sqlite3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3ext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HTException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HTDLL.cpp">
@@ -24,6 +33,9 @@
     </ClCompile>
     <ClCompile Include="stdafxDLL.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HTException.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

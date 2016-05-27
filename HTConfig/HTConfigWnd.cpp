@@ -536,16 +536,74 @@ VOID HTConfigWnd::_switchMode(_In_ BOOL CONST configMode) {
 	}
 }
 
+
+VOID HTConfigWnd::_sendUninstallSignal(_In_ BOOL CONST uninstall) {
+	HANDLE hPipe = INVALID_HANDLE_VALUE;
+	do {
+		hPipe = ::CreateFile(
+			Files::PIPE_NAME, GENERIC_READ | GENERIC_WRITE,
+			0, NULL,
+			OPEN_EXISTING,
+			0, NULL);
+	} while (!VALID_HANDLE(hPipe));
+
+	::WriteFile(hPipe, &uninstall, sizeof(uninstall),NULL, NULL);
+	::CloseHandle(hPipe);
+}
+
 void HTConfigWnd::On_btnCancel_Clicked() {
+	_fillBlanks();
 	_switchMode(FALSE);
 }
 
 void HTConfigWnd::On_btnConfirm_Clicked() {
+	TCHAR keyValue[MAX_PATH];
+	HTHotkeyInfo * keyInfo = &CONSTS.getHotkey(CONSTS.hk_S1);
+	keyInfo->ctrl = UIConfigFrame.s1Ctrl->GetCheck();
+	keyInfo->shift = UIConfigFrame.s1Shift->GetCheck();
+	keyInfo->alt = UIConfigFrame.s1Alt->GetCheck();
+	UIConfigFrame.cmbS1->GetWindowText(keyValue, MAX_PATH);
+	keyInfo->vs_key = HTFuncs::TCHAR2keycode(keyValue[0]);
+
+	keyInfo = &CONSTS.getHotkey(CONSTS.hk_S2);
+	keyInfo->ctrl = UIConfigFrame.s2Ctrl->GetCheck();
+	keyInfo->shift = UIConfigFrame.s2Shift->GetCheck();
+	keyInfo->alt = UIConfigFrame.s2Alt->GetCheck();
+	UIConfigFrame.cmbS2->GetWindowText(keyValue, MAX_PATH);
+	keyInfo->vs_key = HTFuncs::TCHAR2keycode(keyValue[0]);
+
+	keyInfo = &CONSTS.getHotkey(CONSTS.hk_SP);
+	keyInfo->ctrl = UIConfigFrame.spCtrl->GetCheck();
+	keyInfo->shift = UIConfigFrame.spShift->GetCheck();
+	keyInfo->alt = UIConfigFrame.spAlt->GetCheck();
+	UIConfigFrame.cmbSP->GetWindowText(keyValue, MAX_PATH);
+	keyInfo->vs_key = HTFuncs::TCHAR2keycode(keyValue[0]);
+
+	keyInfo = &CONSTS.getHotkey(CONSTS.hk_SC);
+	keyInfo->ctrl = UIConfigFrame.scCtrl->GetCheck();
+	keyInfo->shift = UIConfigFrame.scShift->GetCheck();
+	keyInfo->alt = UIConfigFrame.scAlt->GetCheck();
+	UIConfigFrame.cmbSC->GetWindowText(keyValue, MAX_PATH);
+	keyInfo->vs_key = HTFuncs::TCHAR2keycode(keyValue[0]);
+	UIConfigFrame.txtSC->GetWindowText(keyValue, MAX_PATH);
+	keyInfo->amount = _ttoi(keyValue);
+
+	keyInfo = &CONSTS.getHotkey(CONSTS.hk_CS);
+	keyInfo->ctrl = UIConfigFrame.csCtrl->GetCheck();
+	keyInfo->shift = UIConfigFrame.csShift->GetCheck();
+	keyInfo->alt = UIConfigFrame.csAlt->GetCheck();
+	UIConfigFrame.cmbCS->GetWindowText(keyValue, MAX_PATH);
+	keyInfo->vs_key = HTFuncs::TCHAR2keycode(keyValue[0]);
+	
+	CONSTS.saveHotkeyInfo();
 	_switchMode(FALSE);
 }
 
 void HTConfigWnd::On_btnUninstall_Clicked() {
-
+	
+	if (_isSlave) {
+		_sendUninstallSignal(TRUE);
+	}
 }
 
 void HTConfigWnd::On_btnConfig_Clicked() {
@@ -553,11 +611,19 @@ void HTConfigWnd::On_btnConfig_Clicked() {
 }
 
 void HTConfigWnd::On_btnPlay_Clicked() {
-	::PostQuitMessage(0);
 	CONSTS.setNoShow(UIInfoFrame.noShow->GetCheck());
+	CONSTS.saveHotkeyInfo();
+	
 	if (_isSlave == FALSE) {
-
+		TCHAR toolFullName[MAX_PATH];
+		HTFuncs::getFullPath(Files::TOOL_EXE_NAME, toolFullName, MAX_PATH);
+		TCHAR passcode[] = _T(" Scrublord");
+		HTFuncs::runEXE(toolFullName,passcode);
 	}
+	else {
+		_sendUninstallSignal(FALSE);
+	}
+	::PostQuitMessage(0);
 }
 
 void HTConfigWnd::On_optNoShow_Clicked() {

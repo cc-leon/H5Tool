@@ -167,4 +167,22 @@ namespace HTFuncs {
 		dest[len + 2] = HTFuncs::keyCode2TCHAR(keyInfo.vs_key);
 		dest[len + 3] = 0;
 	}
+
+	HANDLE runEXE(_In_ TCHAR CONST * CONST fullName, _In_ TCHAR * CONST param, _Out_opt_ DWORD * CONST procID) {
+		STARTUPINFO startInfo;
+		PROCESS_INFORMATION procInfo;
+		::ZeroMemory(&startInfo, sizeof(startInfo));
+		::ZeroMemory(&procInfo, sizeof(procInfo));
+
+		BOOL br = ::CreateProcess(fullName,
+			param, NULL, NULL,
+			FALSE,
+			NULL, NULL, NULL,
+			&startInfo, &procInfo);
+
+		if (procID != NULL && procID != nullptr) {
+			*procID = procInfo.dwProcessId;
+		}
+		return procInfo.hProcess;
+	}
 }
