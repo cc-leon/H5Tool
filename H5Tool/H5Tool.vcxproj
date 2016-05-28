@@ -126,6 +126,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="HTMainThread.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafxMainThread.h" />
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +137,12 @@
     <ProjectReference Include="..\HTCommons\HTCommons.vcxproj">
       <Project>{bd166d99-f9e1-4b2c-bb02-fd26212f4108}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="H5Tool.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="C:\Users\cc\Downloads\iconsext\icons\H5_Game_101.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
