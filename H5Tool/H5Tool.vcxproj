@@ -142,7 +142,7 @@
     <ResourceCompile Include="H5Tool.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\cc\Downloads\iconsext\icons\H5_Game_101.ico" />
+    <Image Include="H5_Game_Icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

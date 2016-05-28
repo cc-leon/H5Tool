@@ -46,6 +46,8 @@ int HTInstallWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
+	HICON hIcon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON1));
+	SetIcon(hIcon, TRUE);
 	UIFonts.displayFont = new CFont();
 	UIFonts.displayFont->CreateFont(
 		18,                            // Height

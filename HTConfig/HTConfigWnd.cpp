@@ -70,7 +70,9 @@ END_MESSAGE_MAP()
 
 HTConfigWnd::HTConfigWnd() :
 	_isSlave(FALSE)
-{ }
+{
+	
+}
 
 
 HTConfigWnd::~HTConfigWnd() {
@@ -84,6 +86,7 @@ BOOL HTConfigWnd::PreCreateWindow(CREATESTRUCT& cs) {
 	cs.dwExStyle &= ~WS_EX_CLIENTEDGE;
 	cs.cx = MainFrameRect.Width();
 	cs.cy = MainFrameRect.Height();
+	
 	cs.lpszClass = AfxRegisterWndClass(
 		CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW , // use any window styles
 		AfxGetApp()->LoadStandardCursor(IDC_ARROW),
@@ -99,7 +102,9 @@ int HTConfigWnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	TCHAR buffer[MAX_PATH];
 	HRESULT hr = S_OK;
 	// TODO:  Add your specialized creation code here
-	
+	HICON hIcon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON1));
+	SetIcon(hIcon, TRUE);
+
 	UIFonts.displayFont = new CFont();
 	UIFonts.displayFont->CreateFont(
 		18,                            // Height

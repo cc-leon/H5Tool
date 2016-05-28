@@ -36,7 +36,8 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -126,6 +127,7 @@
     <ClInclude Include="HTConfig.h" />
     <ClInclude Include="HTConfigWnd.h" />
     <ClInclude Include="HTHotkeyCheckBox.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafxConfig.h" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +140,12 @@
     <ProjectReference Include="..\HTCommons\HTCommons.vcxproj">
       <Project>{bd166d99-f9e1-4b2c-bb02-fd26212f4108}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="HTConfig.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="MewoIcon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
