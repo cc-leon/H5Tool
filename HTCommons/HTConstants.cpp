@@ -88,6 +88,63 @@ VOID HTConstants::_writeChinese() {
 		case LangCode::DuplicateInstWarning:
 			_str[(int)i] = _T("无法同时打开两个h5的进程或者设置程序。");
 			break;
+		case LangCode::SURE_UNINSTALL_PROMPRT:
+			_str[(int)i] = _T("即将把“H5一键分兵工具”从电脑中删除。你的游戏本体不会受到影响。确认要继续吗？");
+			break;
+		case LangCode::H5RunningNoUninstall:
+			_str[(int)i] = _T("H5游戏正在运行中，无法进行一键分兵软件的卸载。如想要卸载，请先退出H5游戏。");
+			break;
+		case LangCode::UninstallSuccessful:
+			_str[(int)i] = _T("卸载完成。点击确认后本设置工具的文件也会消失。");
+			break;
+		case LangCode::InstallerTitle:
+			_str[(int)i] = _T("英雄无敌5一键分兵工具安装程序 --天天英吧 制作");
+			break;
+		case LangCode::InstallerDesc:
+			_str[(int)i] = _T("即将安装英雄无敌5一键分兵工具。下方是来自于制作者的声明，请先阅读之后点击继续。只有萝莉才会不看说明就直接点下一步。");
+			break;
+		case LangCode::InstallerAgreement:
+			_str[(int)i] = _T("本工具制作目的是出于编程练习，而非正式软件，和英雄无敌官方也没有关系。"
+				"因此，由于使用本软件造成的使用者电脑的各种物理反应，化学反应甚至核反应等等和本人一切无关。\n"
+				"本工具因为其性质会一定程度导致英雄无敌5主程序不稳定，作者会尽力保证质量，但是对此没有任何义务。\n");
+			break;
+		case LangCode::InstallerFolderDectectSuccess:
+			_str[(int)i] = _T("检测到英雄无敌5安装在如下文件夹里，如果你的英雄无敌5安装在其他位置，你也可以指定其他位置。");
+			break;
+		case LangCode::InstallerFolderDectectFailurePrompt:
+			_str[(int)i] = _T("并没有检测到英雄无敌5的安装目录，请指定你英雄无敌5的位置。\n"
+				"注意：请指定原始位置，不是H5主程序所在的那个Bin文件夹，而是在上一层。");
+			break;
+		case LangCode::InstallerInvalidDirectory:
+			_str[(int)i] = _T("文件夹路径不正确，或者里面没有安装英雄无敌5。");
+			break;
+		case LangCode::InstallerWrongVersionPrompt:
+			_str[(int)i] = _T("版本不正确。你现在的英雄无敌5的版本本工具并不支持，你可以继续安装，但是对此造成的任何后果制作者不负任何责任。");
+			break;
+		case LangCode::InstallerDirectory:
+			_str[(int)i] = _T("安装路径：");
+			break;
+		case LangCode::InstallerBrowseDirectory:
+			_str[(int)i] = _T("浏览...");
+			break;
+		case LangCode::InstallSuccess:
+			_str[(int)i] = _T("成功安装，点击完成关闭安装程序。");
+			break;
+		case LangCode::InstallerButtonNext:
+			_str[(int)i] = _T("下一步");
+			break;
+		case LangCode::InstallerButtonCancel:
+			_str[(int)i] = _T("取消");
+			break;
+		case LangCode::InstallerQuitPrompt:
+			_str[(int)i] = _T("你确定要退出“英雄无敌5一键分兵工具”的安装吗？");
+			break;
+		case LangCode::InstallerButtonFinish:
+			_str[(int)i] = _T("完成");
+			break;
+		case LangCode::InstallerRunGameCheckBox:
+			_str[(int)i] = _T("安装完成后运行一键分兵工具设置向导");
+			break;
 		case LangCode::MAX:
 			break;
 		default:
@@ -101,7 +158,7 @@ VOID HTConstants::_writeEnglish() {
 	for (int i = 0; i < (int)LangCode::MAX; i++) {
 		switch ((LangCode)i) {
 		case LangCode::DialogTitle:
-			_str[(int)i] = _T("One-key Stack Split configuration -- by Berein");
+			_str[(int)i] = _T("One-key Unit Splitter configuration -- by Berein");
 			break;
 		case LangCode::QuestionGoto:
 			_str[(int)i] = _T("Please proceed to Baidu Heroes5 forum for any enqueries.");
@@ -170,6 +227,62 @@ VOID HTConstants::_writeEnglish() {
 		case LangCode::DuplicateInstWarning:
 			_str[(int)i] = _T("You cannot open more than one instance of the H5 game or this tool.");
 			break;
+		case LangCode::SURE_UNINSTALL_PROMPRT:
+			_str[(int)i] = _T("You're about to remove \"H5 TOTE One-key Unit Splitter \". You game will remain unchanged. Are you sure?");
+		case LangCode::H5RunningNoUninstall:
+			_str[(int)i] = _T("Unable to uninstall while H5 game is running. Stop it first before uninstalling.");
+			break;
+		case LangCode::UninstallSuccessful:
+			_str[(int)i] = _T("Uninstallation successfully completed. Click OK then this configuration programm will be removed.");
+			break;
+		case LangCode::InstallerTitle:
+			_str[(int)i] = _T("H5 TOTE One-key Unit Splitter --by Berein");
+			break;
+		case LangCode::InstallerDesc:
+			_str[(int)i] = _T("One-key Unit Splitter is going to be installed on your computer. Please read the following agreements to proceed.");
+			break;
+		case LangCode::InstallerAgreement:
+			_str[(int)i] = _T("This software is made purely due to the programming interest of the authoer. He is not obligated to do this, and this software is not related to Ubisoft by any means. \n"
+				"Therefore, any physical reaction, chemical reation or even nulear reaction that cause damage to you and your property is none of the author's business, it is your own fault. \n"
+				"Due to the nature of the programming work, this tool will unstablise the H5 game to a certain extent. The author will do his best to perfect his software, but he takes no responsibility\n");
+			break;
+		case LangCode::InstallerFolderDectectSuccess:
+			_str[(int)i] = _T("H5 is detected in this folder. You can pinpoint another folder location if you wish,");
+			break;
+		case LangCode::InstallerFolderDectectFailurePrompt:
+			_str[(int)i] = _T("No installed version of H5 is detected, you need to specify the location. \n"
+				"Reminder: Give the install location, not the H5_Game.exe folder named \"Bin\".");
+			break;
+		case LangCode::InstallerInvalidDirectory:
+			_str[(int)i] = _T("Invalid folder or there is no H5 game detected in the folder.");
+			break;
+		case LangCode::InstallerWrongVersionPrompt:
+			_str[(int)i] = _T("Your H5 version is not supported by this tool. You may proceed at your own expense.");
+			break;
+		case LangCode::InstallerDirectory:
+			_str[(int)i] = _T("H5 Folder:");
+			break;
+		case LangCode::InstallerBrowseDirectory:
+			_str[(int)i] = _T("Browse...");
+			break;
+		case LangCode::InstallSuccess:
+			_str[(int)i] = _T("Installation complete. Click finish to end this program.");
+			break;
+		case LangCode::InstallerButtonNext:
+			_str[(int)i] = _T("Next");
+			break;
+		case LangCode::InstallerButtonCancel:
+			_str[(int)i] = _T("Cancel");
+			break;
+		case LangCode::InstallerQuitPrompt:
+			_str[(int)i] = _T("Are you sure to quit?");
+			break;
+		case LangCode::InstallerButtonFinish:
+			_str[(int)i] = _T("Finish");
+			break;
+		case LangCode::InstallerRunGameCheckBox:
+			_str[(int)i] = _T("Run the configuration tools after installation.");
+			break;
 		case LangCode::MAX:
 			break;
 		default:
@@ -195,7 +308,7 @@ VOID HTConstants::_writeConstants() {
 	}
 }
 
-BOOL HTConstants::init(_In_ TCHAR CONST * CONST token, _In_ BOOL CONST chinese) {
+BOOL HTConstants::init(_In_ TCHAR CONST * CONST token, _In_ int CONST chinese ) {
 	if (_started == TRUE) {
 		THROW_USER("The HTConstants class is initiated twice!");
 	}
@@ -204,8 +317,15 @@ BOOL HTConstants::init(_In_ TCHAR CONST * CONST token, _In_ BOOL CONST chinese) 
 	HRESULT hr = S_OK;
 	TCHAR fileName[MAX_PATH];
 
-	if (chinese) {
-		_lang = FileLanguage::CHINESE;
+	if (chinese != 0) {
+		if (chinese > 0) {
+			_lang = FileLanguage::CHINESE;
+			_writeChinese();
+		}
+		else if (chinese < 0) {
+			_lang = FileLanguage::ENGLISH;
+			_writeEnglish();
+		}
 	}
 	else {
 		if (::GetCurrentDirectory(_1K, fileName) == 0) {
@@ -229,28 +349,27 @@ BOOL HTConstants::init(_In_ TCHAR CONST * CONST token, _In_ BOOL CONST chinese) 
 		else {
 			_lang = FileLanguage::ENGLISH;
 		}
-	}
-	
-	HTFuncs::getFullPath(Files::H5_EXE_NAME, fileName, MAX_PATH);
-	
-	DWORD hVer = 0, lVer = 0;
-	HTFuncs::getFileVersion(fileName, hVer, lVer);
-	if (hVer != 3) {
-		return FALSE;
-	}
-	
-	if (lVer == 1) {
-		_ver = FileVersion::THREE_ONE;
-	}
-	else if (lVer == 0) {
-		_ver = FileVersion::THREE_ZERO;
-	}
-	else {
-		return FALSE;
-	}
 
-	_writeConstants();
-	_loadHotkeyInfo();
+		HTFuncs::getFullPath(Files::H5_EXE_NAME, fileName, MAX_PATH);
+
+		DWORD hVer = 0, lVer = 0;
+		HTFuncs::getFileVersion(fileName, hVer, lVer);
+		if (hVer != 3) {
+			return FALSE;
+		}
+
+		if (lVer == 1) {
+			_ver = FileVersion::THREE_ONE;
+		}
+		else if (lVer == 0) {
+			_ver = FileVersion::THREE_ZERO;
+		}
+		else {
+			return FALSE;
+		}
+		_writeConstants();
+		_loadHotkeyInfo();
+	}
 	_loadWeblink();
 
 	_hEvent = ::CreateEvent(NULL, FALSE, FALSE, token);

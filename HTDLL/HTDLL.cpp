@@ -17,7 +17,7 @@ namespace HTDLL {
 			DWORD cbRead = 0;
 			DWORD fileVer = 0;
 			::ReadFile(hPipe, &GVars::procID, sizeof(GVars::procID), &cbRead, NULL);
-			Funcs::popMsgBox(GVars::procID);
+			//Funcs::popMsgBox(GVars::procID);
 			::ReadFile(hPipe, &fileVer, sizeof(fileVer), &cbRead, NULL);
 			GVars::h5Ver = (FileVersion)fileVer;
 			::CloseHandle(hPipe);
@@ -318,7 +318,7 @@ namespace HTDLL {
 		VOID popMsgBox(_In_ int CONST number,_In_ int CONST radix) {
 			CHAR num[20];
 			_itoa_s(number, num, 20, radix);
-			MessageBox(GVars::hWnd, num, "", NULL);
+			//MessageBox(GVars::hWnd, num, "", NULL);
 		}
 	}
 

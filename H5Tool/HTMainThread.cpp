@@ -1,6 +1,5 @@
 #include "stdafxMainThread.h"
 #include "HTMainThread.h"
-
 TCHAR CONST HTMainThread::MY_TOKEN[] = _T("This app sucks");
 
 BEGIN_MESSAGE_MAP(HTMainThread, CWinApp)
@@ -35,6 +34,14 @@ BOOL HTMainThread::InitInstance() {
 		return FALSE;
 	}
 
+	/*HANDLE temp = ::CreateEvent(NULL, FALSE, FALSE, HTDLL::token);
+	if (::GetLastError() == ERROR_ALREADY_EXISTS) {
+		return FALSE;
+	}
+	else {
+		::CloseHandle(temp);
+	}*/
+
 	CFrameWnd * tempWnd = new CFrameWnd;
 	tempWnd->Create(NULL, NULL);
 	m_pMainWnd = tempWnd;
@@ -56,10 +63,15 @@ int HTMainThread::Run() {
 			THROW_USER("Configuration tool file is missing, the software is tempered with");
 		}
 		BOOL uninst = _getUninstallSignal();
+		if (uninst) {
+			::PostQuitMessage(0);
+			goto END;
+		}
 		::WaitForSingleObject(_hProc, INFINITE);
 	}
 
-	if (_seekEXE() == FALSE) {
+	_procID = HTFuncs::seekEXE(Files::H5_EXE_NAME, _hProc);
+	if (_procID == NULL) {
 		HTFuncs::getFullPath(Files::H5_EXE_NAME, exe, MAX_PATH);
 		_hProc = HTFuncs::runEXE(exe,NULL,&_procID);
 		if (!VALID_HANDLE(_hProc)) {
@@ -71,36 +83,8 @@ int HTMainThread::Run() {
 	_sendProcIDAndVer(_procID);
 	
 	::CloseHandle(_hProc);
-	
+END:
 	return 0;
-}
-
-BOOL HTMainThread::_seekEXE() {
-	HANDLE hProc = NULL;
-	DWORD procIDs[_1K],cbProcIDs;
-	TCHAR fileName[_1K];
-
-	::EnumProcesses(procIDs, _1K, &cbProcIDs);
-
-	for (DWORD i = 0; i < cbProcIDs; i++) {
-		hProc = ::OpenProcess(PROCESS_ALL_ACCESS, FALSE, procIDs[i]);
-		if (VALID_HANDLE(hProc)) {
-			if(::GetModuleFileNameEx(hProc, NULL, fileName, _1K) != 0) {
-				size_t slen = HTFuncs::getFileName(fileName, fileName);
-				if (slen > 0) {
-					int cmpRes = ::StrCmp(fileName, Files::H5_EXE_NAME);
-					if (cmpRes == 0) {
-						_hProc = hProc;
-						_procID = procIDs[i];
-						return TRUE;
-					}
-				}
-			}
-		}
-		::CloseHandle(hProc);
-	}
-
-	return FALSE; 
 }
 
 HANDLE HTMainThread::_hookDLL(_In_ HANDLE CONST hProc) {
@@ -156,7 +140,6 @@ HANDLE HTMainThread::_hookDLL(_In_ HANDLE CONST hProc) {
 VOID HTMainThread::_sendProcIDAndVer(_In_ DWORD CONST procID) {
 	HANDLE hPipe = ::CreateNamedPipe(Files::PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_WRITE_THROUGH,
 		PIPE_TYPE_MESSAGE, PIPE_UNLIMITED_INSTANCES, NULL, NULL, INFINITE, NULL);
-	DWORD cc = GetLastError();
 	if (!VALID_HANDLE(hPipe)) {
 		THROW_API("CreateNamedPipe", hPipe, " ");
 	}
@@ -172,7 +155,6 @@ VOID HTMainThread::_sendProcIDAndVer(_In_ DWORD CONST procID) {
 BOOL HTMainThread::_getUninstallSignal() {
 	HANDLE hPipe = ::CreateNamedPipe(Files::PIPE_NAME, PIPE_ACCESS_DUPLEX | FILE_FLAG_WRITE_THROUGH,
 		PIPE_TYPE_MESSAGE, PIPE_UNLIMITED_INSTANCES, NULL, NULL, INFINITE, NULL);
-	DWORD cc = GetLastError();
 	if (!VALID_HANDLE(hPipe)) {
 		THROW_API("CreateNamedPipe", hPipe, " ");
 	}

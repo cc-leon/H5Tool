@@ -152,7 +152,7 @@ protected:
 	VOID _sendUninstallSignal(_In_ BOOL CONST uninstall);
 public:
 	DECLARE_DYNAMIC(HTConfigWnd)
-	
+	static DWORD CONST MSG_BTN_PLAY_STATE = WM_APP+ID_START;
 	VOID setSlave();
 
 	HTConfigWnd();
@@ -160,6 +160,8 @@ public:
 
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	
+	friend UINT WINAPIV dllMonitorThread(LPVOID LParam);
+
 	DECLARE_MESSAGE_MAP()
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
 	afx_msg void On_btnCancel_Clicked();
@@ -168,5 +170,6 @@ public:
 	afx_msg void On_btnConfig_Clicked();
 	afx_msg void On_btnPlay_Clicked();
 	afx_msg void On_optNoShow_Clicked();
+	afx_msg void OnClose();
 };
 

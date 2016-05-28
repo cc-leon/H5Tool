@@ -186,4 +186,31 @@ namespace HTFuncs {
 		}
 		return procInfo.hProcess;
 	}
+
+	DWORD seekEXE(_In_ TCHAR CONST * CONST procName, _Out_ HANDLE& procHandle) {
+		HANDLE hProc = NULL;
+		DWORD procIDs[_1K], cbProcIDs;
+		TCHAR fileName[_1K];
+
+		::EnumProcesses(procIDs, _1K, &cbProcIDs);
+
+		for (DWORD i = 0; i < cbProcIDs; i++) {
+			hProc = ::OpenProcess(PROCESS_ALL_ACCESS, FALSE, procIDs[i]);
+			if (VALID_HANDLE(hProc)) {
+				if (::GetModuleFileNameEx(hProc, NULL, fileName, _1K) != 0) {
+					size_t slen = HTFuncs::getFileName(fileName, fileName);
+					if (slen > 0) {
+						int cmpRes = ::StrCmp(fileName, procName);
+						if (cmpRes == 0) {
+							procHandle = hProc;
+							return procIDs[i];
+						}
+					}
+				}
+			}
+			::CloseHandle(hProc);
+		}
+
+		return NULL;
+	}
 }

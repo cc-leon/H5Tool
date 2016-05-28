@@ -30,6 +30,24 @@ enum class LangCode {
 	ConfirmConfig,
 	CancelConfig,
 	DuplicateInstWarning,
+	SURE_UNINSTALL_PROMPRT,
+	H5RunningNoUninstall,
+	UninstallSuccessful,
+	InstallerTitle,
+	InstallerDesc,
+	InstallerAgreement,
+	InstallerFolderDectectSuccess,
+	InstallerFolderDectectFailurePrompt,
+	InstallerInvalidDirectory,
+	InstallerWrongVersionPrompt,
+	InstallerDirectory,
+	InstallerBrowseDirectory,
+	InstallSuccess,
+	InstallerButtonNext,
+	InstallerButtonCancel,
+	InstallerQuitPrompt,
+	InstallerButtonFinish,
+	InstallerRunGameCheckBox,
 	MAX
 };
 
@@ -61,7 +79,6 @@ private:
 	TCHAR CONST * _weblink;
 	HTHotkeyInfo _hotkeyInfo[hk_MAX];
 	BOOL _started;
-	BOOL _localedSynced;
 	HANDLE _hEvent;
 
 	VOID _writeChinese();
@@ -75,7 +92,7 @@ private:
 public:
 
 	static HTConstants& get();
-	BOOL init(_In_ TCHAR CONST * CONST token, _In_ BOOL CONST chinese = FALSE);
+	BOOL init(_In_ TCHAR CONST * CONST token, _In_ int CONST chinese = 0);
 	TCHAR CONST * getTCHAR(_In_ LangCode CONST code) const;
 	HTHotkeyInfo& getHotkey(_In_ INT CONST code);
 	VOID saveHotkeyInfo();

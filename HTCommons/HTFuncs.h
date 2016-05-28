@@ -15,8 +15,8 @@ namespace HTFuncs {
 	UINT TCHAR2keycode(_In_ TCHAR CONST src);
 	VOID char2TCHAR(_In_ CHAR CONST * CONST src, _Out_ TCHAR * CONST dest);
 	VOID getFullPath(_In_ TCHAR CONST * CONST filename, _Out_ TCHAR * CONST dest, _In_ size_t CONST maxLen);
-	BOOL getChineseLocal();
 	VOID getFileVersion(_In_ TCHAR CONST * CONST fullName, _Out_ DWORD& hVer, _Out_ DWORD& lVer);
 	VOID getKeyString(_In_ HTHotkeyInfo CONST& keyInfo, _Out_ TCHAR * CONST dest);
 	HANDLE runEXE(_In_ TCHAR CONST * CONST fullName, _In_ TCHAR * CONST param = NULL, _Out_opt_ DWORD * CONST procID = NULL);
+	DWORD seekEXE(_In_ TCHAR CONST * CONST procName,_Out_ HANDLE& procHandle);
 }

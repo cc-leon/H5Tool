@@ -82,6 +82,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -123,9 +124,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="H5Tool_Installer.h" />
+    <ClInclude Include="HTInstallWnd.h" />
+    <ClInclude Include="stdafx.h" />
     <ClInclude Include="stdafxInstall.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="H5Tool_Installer.cpp" />
+    <ClCompile Include="HTInstallWnd.cpp" />
     <ClCompile Include="stdafxInstall.cpp" />
   </ItemGroup>
   <ItemGroup>

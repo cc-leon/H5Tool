@@ -18,9 +18,24 @@
     <ClInclude Include="stdafxInstall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="H5Tool_Installer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HTInstallWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafxInstall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="H5Tool_Installer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HTInstallWnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

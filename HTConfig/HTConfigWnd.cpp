@@ -64,6 +64,7 @@ BEGIN_MESSAGE_MAP  (HTConfigWnd, CFrameWnd)
 	ON_STN_CLICKED(HTConfigWnd::btnConfigID, On_btnConfig_Clicked)
 	ON_STN_CLICKED(HTConfigWnd::btnPlayID, On_btnPlay_Clicked)
 	ON_STN_CLICKED(HTConfigWnd::optNoShowID, On_optNoShow_Clicked)
+	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
 
@@ -84,7 +85,7 @@ BOOL HTConfigWnd::PreCreateWindow(CREATESTRUCT& cs) {
 	cs.cx = MainFrameRect.Width();
 	cs.cy = MainFrameRect.Height();
 	cs.lpszClass = AfxRegisterWndClass(
-		CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW | CS_NOCLOSE, // use any window styles
+		CS_DBLCLKS | CS_HREDRAW | CS_VREDRAW , // use any window styles
 		AfxGetApp()->LoadStandardCursor(IDC_ARROW),
 		(HBRUSH)(COLOR_BTNFACE + 1));
 	return TRUE;
@@ -600,9 +601,49 @@ void HTConfigWnd::On_btnConfirm_Clicked() {
 }
 
 void HTConfigWnd::On_btnUninstall_Clicked() {
-	
-	if (_isSlave) {
-		_sendUninstallSignal(TRUE);
+	HANDLE hProc = NULL;
+	if (::HTFuncs::seekEXE(Files::H5_EXE_NAME, hProc)) {
+		::CloseHandle(hProc);
+		::MessageBox(this->m_hWnd, CONSTS.getTCHAR(LangCode::H5RunningNoUninstall), _T(""),
+			MB_OK | MB_ICONERROR);
+		return;
+	}
+
+	if (::MessageBox(this->m_hWnd, CONSTS.getTCHAR(LangCode::SURE_UNINSTALL_PROMPRT), _T(""),
+		MB_YESNO | MB_ICONWARNING) == IDYES) {
+
+		if (_isSlave) {
+			_sendUninstallSignal(TRUE);
+		}
+
+		TCHAR fullName[MAX_PATH];
+		HTFuncs::getFullPath(Files::HOOK_DLL_NAME, fullName, MAX_PATH);
+		::DeleteFile(fullName);
+		HTFuncs::getFullPath(Files::CONFIG_FILE_NAME, fullName, MAX_PATH);
+		::DeleteFile(fullName);
+		HTFuncs::getFullPath(Files::WEBLINK_FILE_NAME, fullName, MAX_PATH);
+		::DeleteFile(fullName);
+		HTFuncs::getFullPath(Files::NOSHOW_FILE_NAME, fullName, MAX_PATH);
+		::DeleteFile(fullName);
+		HTFuncs::getFullPath(Files::DB_NAME, fullName, MAX_PATH);
+		::DeleteFile(fullName);
+		HTFuncs::getFullPath(Files::TOOL_EXE_NAME, fullName, MAX_PATH);
+		::DeleteFile(fullName);
+		TCHAR fullName2[MAX_PATH];
+		::HTFuncs::getFullPath(Files::H5_EXE_NAME, fullName2, MAX_PATH);
+		::MoveFile(fullName2, fullName);
+
+		STARTUPINFO si = { 0 };
+		PROCESS_INFORMATION pi = { 0 };
+		::GetModuleFileName(NULL, fullName2, MAX_PATH);
+
+		::StringCchPrintf( fullName, MAX_PATH,_T("cmd.exe /C ping 1.1.1.1 -n 1 -w 3000 > Nul & Del \"%s\""), fullName2);
+		::MessageBox(this->m_hWnd, CONSTS.getTCHAR(LangCode::UninstallSuccessful), _T(""),
+			MB_OK |MB_ICONINFORMATION);
+		::PostQuitMessage(0);
+		::CreateProcess(NULL, fullName, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+		::CloseHandle(pi.hThread);
+		::CloseHandle(pi.hProcess);
 	}
 }
 
@@ -632,4 +673,15 @@ void HTConfigWnd::On_optNoShow_Clicked() {
 
 VOID HTConfigWnd::setSlave() {
 	_isSlave = TRUE;
+}
+
+void HTConfigWnd::OnClose() {
+	// TODO: Add your message handler code here and/or call default
+
+	CFrameWnd::OnClose();
+	::PostQuitMessage(0);
+}
+
+UINT WINAPIV dllMonitorThread(LPVOID LParam) {
+	return NULL;
 }

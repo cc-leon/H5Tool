@@ -5,7 +5,6 @@ protected:
 	HANDLE _hProc;
 	DWORD _procID;
 	BOOL _isSlave;
-	BOOL _seekEXE();
 	HANDLE _hookDLL(_In_ HANDLE CONST hProc);
 	VOID _sendProcIDAndVer(_In_ DWORD CONST procID);
 	BOOL _getUninstallSignal();
