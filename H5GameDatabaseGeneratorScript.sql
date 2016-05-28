@@ -14,12 +14,12 @@ CREATE TABLE IF NOT EXISTS spells   (id INTEGER PRIMARY KEY);
 CREATE TABLE IF NOT EXISTS mastery   (name TEXT PRIMARY KEY);
 --create relations
 CREATE TABLE IF NOT EXISTS spell_damage (
-	id INTEGER,
+	spell INTEGER,
 	level TEXT,
 	base INTEGER, 
 	multiplier INTEGER,
-	PRIMARY KEY (id, level),
-	FOREIGN KEY (id)   REFERENCES spells (id),
+	PRIMARY KEY (spell, level),
+	FOREIGN KEY (spell)   REFERENCES spells (id),
 	FOREIGN KEY (level) REFERENCES mastery(name));
 CREATE TABLE IF NOT EXISTS caster_creatures (
 	creature INTEGER,

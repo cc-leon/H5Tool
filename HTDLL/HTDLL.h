@@ -1,3 +1,4 @@
+#include "HTGameDB.h"
 
 namespace HTDLL {
 	enum class AddrCode {
@@ -12,7 +13,7 @@ namespace HTDLL {
 	};
 
 	TCHAR CONST token[] = _T("What a stupid DLL!");
-	DWORD CONST MIN_TICKS = 0x100;
+	DWORD64 CONST MAX_TICKS = 0x100;
 	INT CONST MAX_SLOTS = 7;
 	//Global Variables
 	namespace GVars {
@@ -22,9 +23,10 @@ namespace HTDLL {
 		DWORD currHeroAddr = 0;
 		DWORD procID = 0;
 		DWORD addrCodes[(int)AddrCode::MAX];
-		DWORD advTicks = 0;
+		DWORD64 advTicks = 0;
 		FileVersion h5Ver;
 		HWND hWnd = NULL;
+		HTGameDB dbGame;
 	}
 
 	//Procedures
@@ -47,8 +49,6 @@ namespace HTDLL {
 
 	//Functions
 	namespace Funcs{
-		VOID appendSlash(_Inout_ TCHAR * CONST src);
-		VOID getFullPath(_In_ TCHAR CONST * CONST filename, _Out_ TCHAR * CONST dest, _In_ size_t CONST maxLen);
 		VOID popMsgBox(_In_ int CONST number,_In_ int CONST radix = 10);
 	}
 

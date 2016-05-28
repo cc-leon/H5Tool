@@ -32,11 +32,12 @@
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -123,16 +124,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="HTCasterSplitter.cpp" />
     <ClCompile Include="HTDLL.cpp" />
     <ClCompile Include="HTException.cpp" />
+    <ClCompile Include="HTGameDB.cpp" />
     <ClCompile Include="stdafxDLL.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="HTCasterSplitter.h" />
     <ClInclude Include="HTDLL.h" />
     <ClInclude Include="HTException.h" />
-    <ClInclude Include="sqlite3.h" />
-    <ClInclude Include="sqlite3ext.h" />
+    <ClInclude Include="HTGameDB.h" />
     <ClInclude Include="stdafxDLL.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\HTSQLite\HTSQLite.vcxproj">
+      <Project>{cdbfed4d-9842-4c21-91e7-6d3f1480dab1}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

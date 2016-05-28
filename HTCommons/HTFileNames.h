@@ -10,4 +10,6 @@ namespace Files{
 	TCHAR CONST CONFIG_FILE_NAME[] = _T("HTHotkey.cfg");
 	TCHAR CONST WEBLINK_FILE_NAME[] = _T("Weblink.txt");
 	TCHAR CONST NOSHOW_FILE_NAME[] = _T("NoShow.cfg");
+	TCHAR CONST DB_NAME[] = _T("H5ToolDatabase.db");
+	TCHAR CONST SQL_SCRIPT_NAME[] = _T("H5GameDatabaseGeneratorScript.sql");
 } 

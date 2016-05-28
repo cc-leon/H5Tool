@@ -24,6 +24,3 @@
 #include "../HTCommons/FileVersion.h"
 #include "../HTCommons/HTHotkeyInfo.h"
 #include "../HTCommons/HTFileNames.h"
-#include "sqlite3.h"
-
-#pragma comment(lib,"../HTDLL/sqlite3.lib")

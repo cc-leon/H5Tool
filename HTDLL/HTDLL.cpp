@@ -1,5 +1,6 @@
 #include "stdafxDLL.h"
 #include "HTDLL.h"
+#include "HTCasterSplitter.h"
 
 namespace HTDLL {
 	namespace Procs {
@@ -49,25 +50,34 @@ namespace HTDLL {
 				::GetMessage(&msg, NULL, NULL, NULL);
 				::TranslateMessage(&msg);
 				if (LOWORD(msg.message) == WM_HOTKEY) {
-					switch ((KeyCode)msg.wParam) {
-					case KeyCode::S1:
-						splitUnit(1);
-						break;
-					case KeyCode::S2:
-						splitUnit(2);
-						break;
-					case KeyCode::SP:
-						splitCaster();
-						break;
-					case KeyCode::SC:
-						splitUnit(GVars::keyInfo[(int)KeyCode::SC].amount);
-						break;
-					case KeyCode::CS:
-						combineUnit();
-						break;
-					default:
-						THROW_USER("Unhandled key code");
-						break;
+					DWORD64 elapsed = __rdtsc() - GVars::advTicks;
+					LARGE_INTEGER freq;
+					::QueryPerformanceFrequency(&freq);
+					elapsed /= freq.QuadPart;
+					if (elapsed < MAX_TICKS) {
+						switch ((KeyCode)msg.wParam) {
+						case KeyCode::S1:
+							splitUnit(1);
+							break;
+						case KeyCode::S2:
+							splitUnit(2);
+							break;
+						case KeyCode::SP:
+							splitCaster();
+							break;
+						case KeyCode::SC:
+							splitUnit(GVars::keyInfo[(int)KeyCode::SC].amount);
+							break;
+						case KeyCode::CS:
+							combineUnit();
+							break;
+						default:
+							THROW_USER("Unhandled key code");
+							break;
+						}
+					}
+					else {
+						::MessageBeep(MB_ICONERROR);
 					}
 				}
 			}
@@ -121,7 +131,7 @@ namespace HTDLL {
 		VOID readHotkeyData() {
 			::ZeroMemory(&GVars::keyInfo, sizeof(GVars::keyInfo));
 			CHAR configFullName[MAX_PATH];
-			Funcs::getFullPath(Files::CONFIG_FILE_NAME, configFullName, MAX_PATH);
+			HTGameDB::getFullPath(Files::CONFIG_FILE_NAME, configFullName, MAX_PATH);
 
 			CFile file;
 			if (file.Open(configFullName, CFile::typeBinary | CFile::modeRead)) {
@@ -168,7 +178,7 @@ namespace HTDLL {
 
 			for (int i = 0; i < MAX_SLOTS; i++) {
 				if (getCreatureAddr(i) == NULL) {
-					if (*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) - amount > 0) {
+					if (*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) > amount) {
 						BYTE * content = (BYTE*)VirtualAllocEx(GetCurrentProcess(), NULL, GVars::addrCodes[(int)AddrCode::DataLen],
 							MEM_COMMIT|MEM_TOP_DOWN, PAGE_READWRITE);
 						::memcpy(content, getCreatureAddr(mainSlot), GVars::addrCodes[(int)AddrCode::DataLen]);
@@ -236,51 +246,74 @@ namespace HTDLL {
 							}
 						}
 					}
-					/*
-					if (*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) - amount > 0) {
-						BYTE * content = (BYTE*)VirtualAllocEx(GetCurrentProcess(), NULL, GVars::addrCodes[(int)AddrCode::DataLen],
-							MEM_COMMIT, PAGE_READWRITE);
-						::memcpy(content, getCreatureAddr(mainSlot), GVars::addrCodes[(int)AddrCode::DataLen]);
-						*(creatureSlotPtrs + i) = (DWORD)content;
-						*(getCreatureAddr(i) + GVars::addrCodes[(int)AddrCode::AmtOffset]) = amount;
-						*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) -= amount;
-					}
-					else {
-						break;
-					}*/
 				}
 			}
 		}
 
 		VOID splitCaster() {
+			DWORD *heroCreaturePos = (DWORD*)(GVars::currHeroAddr + GVars::addrCodes[(int)AddrCode::Offset]);
+			DWORD * creatureSlotPtrs = (DWORD*)*heroCreaturePos;
+			UINT emptySlots = 0;
+			INT mainSlot = __getFirstCreature();
+			DWORD * mainAddr = getCreatureAddr(mainSlot);
+			DWORD amount = *(mainAddr+ GVars::addrCodes[(int)AddrCode::AmtOffset]) ;
+			DWORD type = *(mainAddr + GVars::addrCodes[(int)AddrCode::TypeOffset]);
+			
+			UINT base = 0, multiplier = 0, growth = 0;
+			if (GVars::dbGame.getCasterInfo((UINT)type, base, multiplier) == FALSE) {
+				return;
+			}
+			growth = GVars::dbGame.getGrowth((UINT)type);
 
+			for (int i = 0; i < MAX_SLOTS;i++) {
+				if (getCreatureAddr(i) == NULL) {
+					emptySlots++;
+				}
+			}
+			if (emptySlots == 0||amount == 1) {
+				return;
+			}
+			if (emptySlots > amount) {
+				emptySlots = amount - 1;
+			}
+			UINT j = 0;
+			for (int i = 0; i < MAX_SLOTS;i++) {
+				if (getCreatureAddr(i) == NULL) {
+					BYTE * content = (BYTE*)VirtualAllocEx(GetCurrentProcess(), NULL, GVars::addrCodes[(int)AddrCode::DataLen],
+					MEM_COMMIT | MEM_TOP_DOWN, PAGE_READWRITE);
+					::memcpy(content, mainAddr, GVars::addrCodes[(int)AddrCode::DataLen]);
+					*(creatureSlotPtrs + i) = (DWORD)content;
+					*(getCreatureAddr(i) + GVars::addrCodes[(int)AddrCode::AmtOffset]) = amount;
+					*(getCreatureAddr(mainSlot) + GVars::addrCodes[(int)AddrCode::AmtOffset]) -= amount;
+					j++;
+					if (j >= emptySlots) {
+						break;
+					}
+				}
+			}
+
+			HTCasterSplitter split(amount, emptySlots + 1, growth, base, multiplier);
+			UINT * CONST splitResult = ALLOC(UINT,emptySlots+1);
+			DWORD *iAddr = NULL;
+			j = 0;
+			split.getOutput(splitResult);
+			for (int i = 0; i < MAX_SLOTS;i++) {
+				iAddr = getCreatureAddr(i);
+				if (iAddr != NULL) {
+					if (*(iAddr + GVars::addrCodes[(int)AddrCode::TypeOffset]) == type) {
+						*(iAddr + GVars::addrCodes[(int)AddrCode::AmtOffset]) = splitResult[j];
+						j++;
+						if (j > emptySlots) {
+							break;
+						}
+					}
+				}
+			}
+			FREE(splitResult);
 		}
 	}
 
 	namespace Funcs {
-		VOID appendSlash(_Inout_ TCHAR * CONST src) {
-			size_t len = 0;
-			HRESULT hr = ::StringCchLength(src, MAX_PATH, &len);
-			if (FAILED(hr)) {
-				THROW_API("StringCchLength", hr, "");
-			}
-			if (src[len - 1] != _T('\\')) {
-				src[len] = _T('\\');
-				src[len + 1] = _T('\0');
-			}
-		}
-
-		VOID getFullPath(_In_ TCHAR CONST * CONST filename, _Out_ TCHAR * CONST dest, _In_ size_t CONST maxLen) {
-			HRESULT hr = S_OK;
-			if (::GetCurrentDirectory(maxLen, dest) == 0) {
-				THROW_API("GetCurrentDirectory", 0, "");
-			}
-			appendSlash(dest);
-			hr = ::StringCchCat(dest, maxLen, filename);
-			if (FAILED(hr)) {
-				THROW_API("StringCchCat", hr, "");
-			}
-		}
 
 		VOID popMsgBox(_In_ int CONST number,_In_ int CONST radix) {
 			CHAR num[20];
@@ -290,21 +323,14 @@ namespace HTDLL {
 	}
 
 	namespace ASMs {
-		void __declspec(naked) asmFunc31() {
-			static int i = 0;
-			i++;
-			if (i > 100) {
-				GVars::advTicks = GetTickCount();
-			}
-			else {
-				i = 0;
-			}
-			
+		void __declspec(naked) asmFunc31() { 
+			GVars::advTicks = __rdtsc();
 			__asm {
 				mov ecx, [esi + 04]
-					mov GVars::currHeroAddr, ecx
-					cmp ecx, [edi + 04]
-					jmp[GVars::jmpBackAddy]
+				mov GVars::currHeroAddr, ecx
+				cmp ecx, [edi + 04]
+
+				jmp[GVars::jmpBackAddy]
 			}
 		}
 	}

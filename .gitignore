@@ -11,6 +11,8 @@ HTDLL/Debug
 HTDLL/Release
 HTConfig/Debug
 HTConfig/Release
+HTSQLite/Debug
+HTSQLite/Release
 H5Tool_Installer/Debug
 H5Tool_Installer/Release
 data

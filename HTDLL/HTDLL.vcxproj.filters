@@ -17,13 +17,13 @@
     <ClInclude Include="stdafxDLL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sqlite3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sqlite3ext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HTException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HTGameDB.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HTCasterSplitter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -34,8 +34,14 @@
     <ClCompile Include="stdafxDLL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HTGameDB.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="HTException.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HTCasterSplitter.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
