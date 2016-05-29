@@ -686,9 +686,13 @@ VOID HTConfigWnd::setSlave() {
 
 void HTConfigWnd::OnClose() {
 	// TODO: Add your message handler code here and/or call default
+	if (_isSlave) {
+		On_btnPlay_Clicked();
 
-	CFrameWnd::OnClose();
-	::PostQuitMessage(0);
+	}
+	else {
+		::PostQuitMessage(0);
+	}
 }
 
 UINT WINAPIV dllMonitorThread(LPVOID LParam) {
