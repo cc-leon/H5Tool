@@ -48,6 +48,7 @@ enum class LangCode {
 	InstallerQuitPrompt,
 	InstallerButtonFinish,
 	InstallerRunGameCheckBox,
+	ShortcutName,
 	MAX
 };
 

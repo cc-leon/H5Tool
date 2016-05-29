@@ -145,6 +145,9 @@ VOID HTConstants::_writeChinese() {
 		case LangCode::InstallerRunGameCheckBox:
 			_str[(int)i] = _T("安装完成后运行一键分兵工具设置向导");
 			break;
+		case LangCode::ShortcutName:
+			_str[(int)i] = _T("英雄无敌5一键分兵设置");
+			break;
 		case LangCode::MAX:
 			break;
 		default:
@@ -282,6 +285,9 @@ VOID HTConstants::_writeEnglish() {
 			break;
 		case LangCode::InstallerRunGameCheckBox:
 			_str[(int)i] = _T("Run the configuration tools after installation.");
+			break;
+		case LangCode::ShortcutName:
+			_str[(int)i] = _T("HoMM5 One-key Splitter Setting");
 			break;
 		case LangCode::MAX:
 			break;
@@ -442,7 +448,7 @@ VOID HTConstants::_loadWeblink() {
 	CFile file;
 	TCHAR linkFile[MAX_PATH];
 	HTFuncs::getFullPath(Files::WEBLINK_FILE_NAME, linkFile, MAX_PATH);
-	if (file.Open(linkFile, CFile::typeUnicode | CFile::modeRead)) {
+	if (file.Open(linkFile, CFile::typeText | CFile::modeRead)) {
 		BYTE * buffer = ALLOC(BYTE, file.GetLength()+1);
 		buffer[file.GetLength()] = 0;
 		file.Read(buffer, (int)file.GetLength());

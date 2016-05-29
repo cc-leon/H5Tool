@@ -3,7 +3,12 @@
 
 #include "stdafxInstall.h"
 #include "HTInstallWnd.h"
-
+#include <shlobj.h>
+#include <winnls.h>
+#include <shobjidl.h>
+#include <objbase.h>
+#include <objidl.h>
+#include <shlguid.h>
 // HTInstallWnd
 
 CONST CRect HTInstallWnd::FrameRect(100, 100, 700, 500);
@@ -223,8 +228,10 @@ void HTInstallWnd::On_btnNext_Clicked() {
 			txtDir->GetWindowText( configFullName,MAX_PATH);
 			HTFuncs::appendSlash(configFullName);
 			::StringCchCat(configFullName, MAX_PATH, _T("bin\\"));
+			TCHAR workingDir[MAX_PATH];
+			::StringCchCopy(workingDir, MAX_PATH, configFullName);
 			::StringCchCat(configFullName, MAX_PATH, Files::TOOL_EXE_NAME);
-			::CreateProcess(NULL, configFullName, NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
+			::CreateProcess(configFullName,NULL , NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, workingDir, &si, &pi);
 			::CloseHandle(pi.hThread);
 			::CloseHandle(pi.hProcess);
 			::PostQuitMessage(0);
@@ -249,6 +256,8 @@ void HTInstallWnd::On_optRunGame_Clicked() {
 
 VOID HTInstallWnd::_copyFiles(_In_ TCHAR CONST * CONST targetDir) {
 	TCHAR currDir[MAX_PATH];
+	HRESULT hr;
+	
 	::GetCurrentDirectory(MAX_PATH, currDir);
 	HTFuncs::appendSlash(currDir);
 
@@ -260,9 +269,6 @@ VOID HTInstallWnd::_copyFiles(_In_ TCHAR CONST * CONST targetDir) {
 	::StringCchPrintf(targetName, MAX_PATH,_T("%sbin\\%s"), targetDir, Files::HOOK_DLL_NAME);
 	::StringCchPrintf(currName, MAX_PATH, _T("%s%s"), currDir, Files::HOOK_DLL_NAME);
 	::CopyFile(currName, targetName, FALSE);
-	::StringCchPrintf(targetName, MAX_PATH, _T("%sbin\\%s"), targetDir, Files::CONFIG_EXE_NAME);
-	::StringCchPrintf(currName, MAX_PATH, _T("%s%s"), currDir, Files::CONFIG_EXE_NAME);
-	::CopyFile(currName, targetName, FALSE);
 	::StringCchPrintf(targetName, MAX_PATH, _T("%sbin\\%s"), targetDir, Files::TOOL_EXE_NAME);
 	::StringCchPrintf(currName, MAX_PATH, _T("%s%s"), currDir, Files::TOOL_EXE_NAME);
 	::CopyFile(currName, targetName, FALSE);
@@ -272,5 +278,35 @@ VOID HTInstallWnd::_copyFiles(_In_ TCHAR CONST * CONST targetDir) {
 	::StringCchPrintf(targetName, MAX_PATH, _T("%sbin\\%s"), targetDir, Files::DB_NAME);
 	::StringCchPrintf(currName, MAX_PATH, _T("%s%s"), currDir, Files::DB_NAME);
 	::CopyFile(currName, targetName, FALSE);
+	::StringCchPrintf(targetName, MAX_PATH, _T("%sbin\\%s"), targetDir, Files::CONFIG_EXE_NAME);
+	::StringCchPrintf(currName, MAX_PATH, _T("%s%s"), currDir, Files::CONFIG_EXE_NAME);
+	::CopyFile(currName, targetName, FALSE);
 
+	hr = SHGetFolderPath(NULL, CSIDL_DESKTOPDIRECTORY, NULL, 0, currName);
+	if ( FAILED(hr)) {
+		THROW_API("SHGetFolderPath", 0, "");
+	}
+	HTFuncs::appendSlash(currName);
+	::StringCchCat(currName, MAX_PATH, CONSTS.getTCHAR(LangCode::ShortcutName));
+	::StringCchCat(currName, MAX_PATH, _T(".lnk"));
+	TCHAR workingDir[MAX_PATH];
+	::StringCchCopy(workingDir, MAX_PATH, targetDir);
+	HTFuncs::appendSlash(workingDir);
+	::StringCchCat(workingDir, MAX_PATH, _T("bin"));
+
+	IShellLink* psl;
+	hr = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID*)&psl);
+	if (SUCCEEDED(hr)) {
+		IPersistFile* ppf;
+		psl->SetPath(targetName);
+		psl->SetDescription(CONSTS.getTCHAR(LangCode::DialogTitle));
+		psl->SetWorkingDirectory(workingDir);
+		hr = psl->QueryInterface(IID_IPersistFile, (LPVOID*)&ppf);
+
+		if (SUCCEEDED(hr)) {
+			hr = ppf->Save(currName, TRUE);
+			ppf->Release();
+		}
+		psl->Release();
+	}
 }
