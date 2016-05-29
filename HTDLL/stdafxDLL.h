@@ -20,7 +20,7 @@
 #include <tchar.h>
 #include <strsafe.h>
 
-#include "HTException.h"
+#include "./HTException.h"
 #include "../HTCommons/FileVersion.h"
 #include "../HTCommons/HTHotkeyInfo.h"
 #include "../HTCommons/HTFileNames.h"

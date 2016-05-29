@@ -134,7 +134,7 @@ namespace HTDLL {
 			HTGameDB::getFullPath(Files::CONFIG_FILE_NAME, configFullName, MAX_PATH);
 
 			CFile file;
-			if (file.Open(configFullName, CFile::typeBinary | CFile::modeRead)) {
+			if (file.Open(configFullName, CFile::modeRead)) {
 				BYTE * CONST buffer = ALLOC(BYTE, file.GetLength());
 				file.Read(buffer, (UINT)file.GetLength());
 				file.Close();

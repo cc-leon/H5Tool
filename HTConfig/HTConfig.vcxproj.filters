@@ -41,6 +41,9 @@
     <ClCompile Include="HTHotkeyCheckBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="stdafxConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="HTConfig.rc">

@@ -191,6 +191,18 @@ void HTInstallWnd::On_btnNext_Clicked() {
 		if (FAILED(hr)) {
 			THROW_API("StringCchCat", hr, "");
 		}
+
+		hr = ::StringCchCat(targetName, MAX_PATH, Files::H5_EXE_NAME);
+		if (FAILED(hr)) {
+			THROW_API("StringCchCat", hr, "");
+		}
+		if (::PathFileExists(targetName)) {
+			::MessageBox(this->m_hWnd, CONSTS.getTCHAR(LangCode::InstallerInstalledError), _T(""), MB_OK | MB_ICONINFORMATION);
+			return;
+		}
+		HTFuncs::goUpPath(targetName);
+		HTFuncs::appendSlash(targetName);
+
 		hr = ::StringCchCat(targetName, MAX_PATH, Files::TOOL_EXE_NAME);
 		if (FAILED(hr)) {
 			THROW_API("StringCchCat", hr, "");
@@ -200,6 +212,7 @@ void HTInstallWnd::On_btnNext_Clicked() {
 		}
 		else {
 			DWORD hVer = 0, lVer = 0;
+
 			HTFuncs::getFileVersion(targetName, hVer, lVer);
 			if (hVer != 3 || lVer != 1) {
 				if (::MessageBox(this->m_hWnd, CONSTS.getTCHAR(LangCode::InstallerWrongVersionPrompt), _T(""), MB_ICONWARNING | MB_OKCANCEL)==IDCANCEL) {
@@ -234,8 +247,8 @@ void HTInstallWnd::On_btnNext_Clicked() {
 			::CreateProcess(configFullName,NULL , NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, workingDir, &si, &pi);
 			::CloseHandle(pi.hThread);
 			::CloseHandle(pi.hProcess);
-			::PostQuitMessage(0);
 		}
+		::PostQuitMessage(0);
 	}
 }
 

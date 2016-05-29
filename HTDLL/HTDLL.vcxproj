@@ -125,7 +125,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\HTConfig\stdafxConfig.cpp" />
     <ClCompile Include="HTCasterSplitter.cpp" />
     <ClCompile Include="HTDLL.cpp" />
     <ClCompile Include="HTException.cpp" />

@@ -134,6 +134,7 @@
     <ClCompile Include="HTConfig.cpp" />
     <ClCompile Include="HTConfigWnd.cpp" />
     <ClCompile Include="HTHotkeyCheckBox.cpp" />
+    <ClCompile Include="stdafxConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HTCommons\HTCommons.vcxproj">

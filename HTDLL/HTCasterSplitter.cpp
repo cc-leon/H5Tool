@@ -1,5 +1,5 @@
-#include <math.h>
 #include "stdafxDLL.h"
+#include <math.h>
 #include "HTCasterSplitter.h"
 HTCasterSplitter::HTCasterSplitter(
 	_In_ UINT CONST amount,

@@ -145,6 +145,9 @@ VOID HTConstants::_writeChinese() {
 		case LangCode::InstallerRunGameCheckBox:
 			_str[(int)i] = _T("安装完成后运行一键分兵工具设置向导");
 			break;
+		case LangCode::InstallerInstalledError:
+			_str[(int)i] = _T("一键分兵已经安装在这个文件夹里面。请选择一个没有一键分兵工具的安装位置。");
+			break;
 		case LangCode::ShortcutName:
 			_str[(int)i] = _T("英雄无敌5一键分兵设置");
 			break;
@@ -286,6 +289,9 @@ VOID HTConstants::_writeEnglish() {
 		case LangCode::InstallerRunGameCheckBox:
 			_str[(int)i] = _T("Run the configuration tools after installation.");
 			break;
+		case LangCode::InstallerInstalledError:
+			_str[(int)i] = _T("One-key Splitter Tool is already installed in this directory. Please choose another h5 directory without the tool.");
+			break;
 		case LangCode::ShortcutName:
 			_str[(int)i] = _T("HoMM5 One-key Splitter Setting");
 			break;
@@ -403,7 +409,7 @@ HTHotkeyInfo& HTConstants::getHotkey(_In_ INT CONST code) {
 
 VOID HTConstants::_loadHotkeyInfo() {
 	CFile file;
-	if (file.Open(Files::CONFIG_FILE_NAME, CFile::typeBinary | CFile::modeRead)) {
+	if (file.Open(Files::CONFIG_FILE_NAME,CFile::modeRead)) {
 		BYTE * CONST buffer = ALLOC(BYTE, file.GetLength());
 		HTHotkeyInfo * reader = reinterpret_cast<HTHotkeyInfo*>(buffer);
 
@@ -439,7 +445,7 @@ VOID HTConstants::saveHotkeyInfo() {
 		THROW_USER("Attempt to call a method without calling init() first!");
 	}
 
-	CFile file(Files::CONFIG_FILE_NAME, CFile::typeBinary | CFile::modeWrite | CFile::modeCreate);
+	CFile file(Files::CONFIG_FILE_NAME, CFile::modeWrite | CFile::modeCreate);
 	file.Write(&_hotkeyInfo, sizeof(_hotkeyInfo));
 	file.Close();
 }
@@ -448,7 +454,7 @@ VOID HTConstants::_loadWeblink() {
 	CFile file;
 	TCHAR linkFile[MAX_PATH];
 	HTFuncs::getFullPath(Files::WEBLINK_FILE_NAME, linkFile, MAX_PATH);
-	if (file.Open(linkFile, CFile::typeText | CFile::modeRead)) {
+	if (file.Open(linkFile, CFile::modeRead)) {
 		BYTE * buffer = ALLOC(BYTE, file.GetLength()+1);
 		buffer[file.GetLength()] = 0;
 		file.Read(buffer, (int)file.GetLength());
@@ -456,7 +462,6 @@ VOID HTConstants::_loadWeblink() {
 		HTFuncs::char2TCHAR((char*)(buffer), newLink);
 		_weblink = newLink;
 		FREE(buffer);
-		FREE(newLink);
 	}
 	else {
 		_generateDefaultWeblink();
@@ -488,7 +493,7 @@ BOOL HTConstants::getNoShow() {
 	CFile file;
 	TCHAR noshowFile[MAX_PATH];
 	HTFuncs::getFullPath(Files::NOSHOW_FILE_NAME, noshowFile, MAX_PATH);
-	if (file.Open(noshowFile, CFile::modeRead | CFile::typeBinary)) {
+	if (file.Open(noshowFile, CFile::modeRead)) {
 		file.Close();
 		return TRUE;
 	}
