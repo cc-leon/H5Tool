@@ -1,6 +1,6 @@
 #include "stdafxConfig.h"
 #include "HTConfigWnd.h"
-
+#include <shlobj.h>
 CRect CONST HTConfigWnd::MainFrameRect(300, 200, 900, 600);
 CRect CONST HTConfigWnd::ConfigFrameRect(300, 200, 900, 600);
 CRect CONST HTConfigWnd::lblS1Rect(10, 60, 570, 80);
@@ -632,9 +632,13 @@ void HTConfigWnd::On_btnUninstall_Clicked() {
 		::DeleteFile(fullName);
 		HTFuncs::getFullPath(Files::DB_NAME, fullName, MAX_PATH);
 		::DeleteFile(fullName);
+		TCHAR fullName2[MAX_PATH];
+		::SHGetFolderPath(NULL, CSIDL_DESKTOPDIRECTORY, NULL, 0, fullName2);
+		HTFuncs::appendSlash(fullName2);
+		::StringCchPrintf(fullName, MAX_PATH, _T("%s%s.lnk"), fullName2, CONSTS.getTCHAR(LangCode::ShortcutName));
+		::DeleteFile(fullName);
 		HTFuncs::getFullPath(Files::TOOL_EXE_NAME, fullName, MAX_PATH);
 		::DeleteFile(fullName);
-		TCHAR fullName2[MAX_PATH];
 		::HTFuncs::getFullPath(Files::H5_EXE_NAME, fullName2, MAX_PATH);
 		::MoveFile(fullName2, fullName);
 
